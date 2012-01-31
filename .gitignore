@@ -1,0 +1,20 @@
+*.gem
+.bundle
+Gemfile.lock
+pkg/*
+
+# Temporary files of every sort
+.DS_Store
+.idea
+.rvmrc
+.stgit*
+*.swap
+*.swo
+*.swp
+*~
+bin/*
+nbproject
+patches-*
+capybara-*.html
+dump.rdb
+*.ids
