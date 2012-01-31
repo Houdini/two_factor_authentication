@@ -24,6 +24,7 @@ Two default parameters
 ```
 
 Possible random patterns
+
 ```ruby
 /\d{5}/
 /\w{4,8}/
@@ -32,17 +33,21 @@ Possible random patterns
 see more https://github.com/benburkert/randexp
 
 By default second factor authentication enabled for each user, you can change it with this method in your User mdoel:
+
 ```ruby
   def need_two_factor_authentication?(request)
     request.ip != '127.0.0.1'
   end
 ```
+
 this will disable two factor authentication for local users
 
 Your send sms logic should be in this method in your User model:
+
 ```ruby
   def send_two_factor_authentication_code(code)
     puts code
   end
 ```
+
 This example just puts code in logs
