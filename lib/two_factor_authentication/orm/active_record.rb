@@ -1,10 +1,8 @@
 module TwoFactorAuthentication
   module Orm
-
     module ActiveRecord
       module Schema
         include TwoFactorAuthentication::Schema
-
       end
     end
   end
