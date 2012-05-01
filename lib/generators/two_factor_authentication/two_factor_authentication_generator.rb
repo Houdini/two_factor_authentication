@@ -3,7 +3,7 @@ module TwoFactorAuthenticatable
     class TwoFactorAuthenticationGenerator < Rails::Generators::NamedBase
       namespace "two_factor_authentication"
 
-      desc "Add :two_factor_authenticable directive in the given model. Also generate migration for ActiveRecord"
+      desc "Adds :two_factor_authenticable directive in the given model. It also generates an active record migration."
 
       def inject_two_factor_authentication_content
         path = File.join("app", "models", "#{file_path}.rb")
