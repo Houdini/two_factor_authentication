@@ -9,7 +9,33 @@
 
 ## Configuration
 
-To enable two factor authentication for User model, you should add two_factor_authentication to your devise line, like:
+### Initial Setup
+
+In a Rails environment, require the gem in your Gemfile:
+
+    gem 'two_factor_authentication', git: "http://github.com/Houdini/two_factor_authentication.git"
+
+Once that's done, run:
+
+    bundle install
+
+
+### Automatic installation
+
+In order to add two factor authorisation to a model, run the command:
+
+    bundle exec rails g two_factor_authentication MODEL
+
+Where MODEL is your model name (e.g. User or Admin). This generator will add `:two_factor_authenticatable` to your model
+and create a migration in `db/migrate/`, which will add `::second_factor_pass_code` and `:second_factor_attempts_count` to your table.
+Finally, run the migration with:
+
+    bundle exec rake db:migrate
+
+
+### Manual installation
+
+To manually enable two factor authentication for the User model, you should add two_factor_authentication to your devise line, like:
 
 ```ruby
   devise :database_authenticatable, :registerable,
@@ -32,7 +58,9 @@ Possible random patterns
 
 see more https://github.com/benburkert/randexp
 
-By default second factor authentication enabled for each user, you can change it with this method in your User mdoel:
+### Customisation
+
+By default second factor authentication enabled for each user, you can change it with this method in your User model:
 
 ```ruby
   def need_two_factor_authentication?(request)
@@ -50,4 +78,4 @@ Your send sms logic should be in this method in your User model:
   end
 ```
 
-This example just puts code in logs
+This example just puts the code in the logs.
