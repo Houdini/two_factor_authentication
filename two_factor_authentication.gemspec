@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = TwoFactorAuthentication::VERSION
   s.authors     = ["Dmitrii Golub"]
   s.email       = ["dmitrii.golub@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/Houdini/two_factor_authentication"
   s.summary     = %q{Two factor authentication plugin for devise}
   s.description = s.summary
 
