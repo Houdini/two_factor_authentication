@@ -9,7 +9,13 @@ Gem::Specification.new do |s|
   s.email       = ["dmitrii.golub@gmail.com"]
   s.homepage    = "https://github.com/Houdini/two_factor_authentication"
   s.summary     = %q{Two factor authentication plugin for devise}
-  s.description = s.summary
+  s.description = <<-EOF
+    ### Features ###
+    * control sms code pattern
+    * configure max login attempts
+    * per user level control if he really need two factor authentication
+    * your own sms logic
+  EOF
 
   s.rubyforge_project = "two_factor_authentication"
 
