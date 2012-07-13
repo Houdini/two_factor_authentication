@@ -4,7 +4,7 @@ require "two_factor_authentication/version"
 
 Gem::Specification.new do |s|
   s.name        = "two_factor_authentication"
-  s.version     = TwoFactorAuthentication::VERSION
+  s.version     = TwoFactorAuthentication::VERSION.dup
   s.authors     = ["Dmitrii Golub"]
   s.email       = ["dmitrii.golub@gmail.com"]
   s.homepage    = "https://github.com/Houdini/two_factor_authentication"

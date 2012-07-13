@@ -13,7 +13,7 @@
 
 In a Rails environment, require the gem in your Gemfile:
 
-    gem 'two_factor_authentication', git: "http://github.com/Houdini/two_factor_authentication.git"
+    gem 'two_factor_authentication'
 
 Once that's done, run:
 
