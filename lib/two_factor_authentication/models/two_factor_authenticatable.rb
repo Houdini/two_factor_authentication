@@ -8,7 +8,7 @@ module Devise
         ::Devise::Models.config(self, :login_code_random_pattern, :max_login_attempts)
       end
 
-      def need_two_factor_authentication?
+      def need_two_factor_authentication?(request)
         true
       end
 
