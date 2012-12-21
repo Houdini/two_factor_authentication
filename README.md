@@ -79,3 +79,12 @@ Your send sms logic should be in this method in your User model:
 ```
 
 This example just puts the code in the logs.
+
+### External dependencies
+
+Randexp requires words files (Check if it is installed in /usr/share/dict/words or /usr/dict/words), 
+you might need install it:
+
+```bash
+apt-get install wbritish # or whichever you require
+```
