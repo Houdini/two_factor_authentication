@@ -10,14 +10,21 @@ module TwoFactorAuthentication
       private
 
       def handle_two_factor_authentication
-        if not request.format.nil? and request.format.html? and not devise_controller?
+        unless devise_controller?
           Devise.mappings.keys.flatten.any? do |scope|
             if signed_in?(scope) and warden.session(scope)[:need_two_factor_authentication]
-              session["#{scope}_return_tor"] = request.path if request.get?
-              redirect_to two_factor_authentication_path_for(scope)
-              return
+              handle_failed_second_factor(scope)
             end
           end
+        end
+      end
+
+      def handle_failed_second_factor(scope)
+        if request.format.present? and request.format.html?
+          session["#{scope}_return_tor"] = request.path if request.get?
+          redirect_to two_factor_authentication_path_for(scope)
+        else
+          render nothing: true, status: :unauthorized
         end
       end
 
