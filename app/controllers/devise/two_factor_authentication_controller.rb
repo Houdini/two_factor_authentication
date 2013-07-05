@@ -1,4 +1,4 @@
-class Devise::TwoFactorAuthenticationController < DeviseController
+class Devise::TwoFactorAuthenticationController <  ActiveAdmin::Devise::SessionsController # DeviseController
   prepend_before_filter :authenticate_scope!
   before_filter :prepare_and_validate, :handle_two_factor_authentication
 
@@ -11,7 +11,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     if md5.eql?(resource.second_factor_pass_code)
       warden.session(resource_name)[:need_two_factor_authentication] = false
       sign_in resource_name, resource, :bypass => true
-      redirect_to stored_location_for(resource_name) || :root
+      redirect_to stored_location_for(resource_name) || '/admin' #:root
       resource.update_attribute(:second_factor_attempts_count, 0)
     else
       resource.second_factor_attempts_count += 1
