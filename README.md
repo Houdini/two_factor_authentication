@@ -45,8 +45,8 @@ To manually enable two factor authentication for the User model, you should add 
 Two default parameters
 
 ```ruby
-  config.login_code_random_pattern = /\w+/
-  config.max_login_attempts = 3
+  config.devise.login_code_random_pattern = /\w+/
+  config.devise.max_login_attempts = 3
 ```
 
 Possible random patterns
