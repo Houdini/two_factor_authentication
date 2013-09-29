@@ -7,10 +7,6 @@ module TwoFactorAuthentication
         before_filter :handle_two_factor_authentication
       end
 
-      def is_fully_authenticated?
-        session["warden.user.user.session"].try(:[], :need_two_factor_authentication)
-      end
-
       private
 
       def handle_two_factor_authentication
@@ -38,6 +34,17 @@ module TwoFactorAuthentication
         send(change_path)
       end
 
+    end
+  end
+end
+
+
+module Devise
+  module Colntrollers
+    module Helpers
+      def is_not_fully_authenticated?
+        session["warden.user.user.session"].try(:[], :need_two_factor_authentication)
+      end
     end
   end
 end
