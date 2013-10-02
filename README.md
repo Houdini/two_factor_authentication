@@ -80,6 +80,24 @@ Your send sms logic should be in this method in your User model:
 
 This example just puts the code in the logs.
 
+#### Reset second factor attempts after a period of time
+
+For example, if you have set this period in Settings.reset_attempts_period:
+
+```ruby
+  def max_login_attempts?
+    check_attempts_reset
+  
+    second_factor_attempts_count >= self.class.max_login_attempts
+  end
+ 
+  def check_attempts_reset
+    if Time.now - Settings.reset_attempts_period > updated_at
+      update_attribute(:second_factor_attempts_count, 0)
+    end
+  end
+```
+
 ### External dependencies
 
 Randexp requires words files (Check if it is installed in /usr/share/dict/words or /usr/dict/words), 
