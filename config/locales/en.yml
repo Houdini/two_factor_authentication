@@ -2,3 +2,5 @@ en:
   devise:
     two_factor_authentication:
       attempt_failed: "Attempt failed."
+      max_login_attempts_reached: "Access completely denied as you have reached your attempts limit"
+      contact_administrator: "Please contact your system administrator."

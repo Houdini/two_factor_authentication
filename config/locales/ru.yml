@@ -1,0 +1,6 @@
+ru:
+  devise:
+    two_factor_authentication:
+      attempt_failed: "Неверный код."
+      max_login_attempts_reached: "Доступ заблокирован. Превышено число попыток авторизации"
+      contact_administrator: "Пожалуйста, свяжитесь с системным администратором."
