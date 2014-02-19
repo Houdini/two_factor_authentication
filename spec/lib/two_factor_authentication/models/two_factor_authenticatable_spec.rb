@@ -31,3 +31,25 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
     end
   end
 end
+
+describe Devise::Models::TwoFactorAuthenticatable, '#authenticate_otp' do
+  let(:instance) { AuthenticatedModelHelper.create_new_user }
+
+  before :each do
+    instance.otp_secret_key = "2z6hxkdwi3uvrnpn"
+  end
+
+  def do_invoke code, options = {}
+    instance.authenticate_otp(code, options)
+  end
+
+  it "should be able to authenticate a recently created code" do
+    code = instance.otp_code
+    expect(do_invoke(code)).to eq(true)
+  end
+
+  it "should not authenticate an old code" do
+    code = instance.otp_code(1.minutes.ago.to_i)
+    expect(do_invoke(code)).to eq(false)
+  end
+end
