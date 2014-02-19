@@ -1,13 +1,12 @@
 require 'two_factor_authentication/version'
-require 'randexp'
 require 'devise'
-require 'digest'
 require 'active_support/concern'
+require "active_model"
+require "active_support/core_ext/class/attribute_accessors"
+require "cgi"
+require "rotp"
 
 module Devise
-  mattr_accessor :login_code_random_pattern
-  @@login_code_random_pattern = /\w+/
-
   mattr_accessor :max_login_attempts
   @@max_login_attempts = 3
 end
