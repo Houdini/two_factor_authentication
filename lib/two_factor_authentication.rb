@@ -2,6 +2,7 @@ require 'two_factor_authentication/version'
 require 'devise'
 require 'active_support/concern'
 require "active_model"
+require "active_record"
 require "active_support/core_ext/class/attribute_accessors"
 require "cgi"
 require "rotp"
