@@ -8,7 +8,7 @@ module Devise
         def has_one_time_password(options = {})
 
           cattr_accessor :otp_column_name
-          self.otp_column_name = (options[:column_name] || "otp_secret_key").to_s
+          self.otp_column_name = "otp_secret_key"
 
           include InstanceMethodsOnActivation
 
