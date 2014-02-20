@@ -50,18 +50,18 @@ module Devise
           self.send("#{self.class.otp_column_name}=", attr)
         end
 
-      end
+        def need_two_factor_authentication?(request)
+          true
+        end
 
-      def need_two_factor_authentication?(request)
-        true
-      end
+        def send_two_factor_authentication_code
+          raise NotImplementedError.new("No default implementation - please define in your class.")
+        end
 
-      def send_two_factor_authentication_code(code)
-        p "Code is #{code}"
-      end
+        def max_login_attempts?
+          second_factor_attempts_count >= self.class.max_login_attempts
+        end
 
-      def max_login_attempts?
-        second_factor_attempts_count >= self.class.max_login_attempts
       end
     end
   end

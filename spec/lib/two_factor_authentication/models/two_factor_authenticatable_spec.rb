@@ -53,3 +53,18 @@ describe Devise::Models::TwoFactorAuthenticatable, '#authenticate_otp' do
     expect(do_invoke(code)).to eq(false)
   end
 end
+
+describe Devise::Models::TwoFactorAuthenticatable, '#send_two_factor_authentication_code' do
+
+  it "should raise an error by default" do
+    instance = AuthenticatedModelHelper.create_new_user
+    expect {
+      instance.send_two_factor_authentication_code
+    }.to raise_error(NotImplementedError)
+  end
+
+  it "should be overrideable" do
+    instance = AuthenticatedModelHelper.create_new_user_with_overrides
+    expect(instance.send_two_factor_authentication_code).to eq("Code sent")
+  end
+end
