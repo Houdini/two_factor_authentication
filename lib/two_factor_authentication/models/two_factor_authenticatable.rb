@@ -20,17 +20,15 @@ module Devise
             end
           end
         end
-        ::Devise::Models.config(self, :max_login_attempts)
+        ::Devise::Models.config(self, :max_login_attempts, :allowed_otp_drift_seconds)
       end
 
       module InstanceMethodsOnActivation
         def authenticate_otp(code, options = {})
           totp = ROTP::TOTP.new(self.otp_column)
-          if drift = options[:drift]
-            totp.verify_with_drift(code, drift)
-          else
-            totp.verify(code)
-          end
+          drift = options[:drift] || self.class.allowed_otp_drift_seconds
+
+          totp.verify_with_drift(code, drift)
         end
 
         def otp_code(time = Time.now)
