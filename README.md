@@ -71,7 +71,7 @@ Override the method to send one-time passwords in your model, this is automatica
       # use Model#otp_code and send via SMS, etc.
     end
 
-### Customisation
+### Customisation and Usage
 
 By default second factor authentication enabled for each user, you can change it with this method in your User model:
 
@@ -82,3 +82,9 @@ By default second factor authentication enabled for each user, you can change it
 ```
 
 this will disable two factor authentication for local users
+
+This gem is compatible with Google Authenticator (https://support.google.com/accounts/answer/1066447?hl=en).  You can generate provisioning uris by invoking the following method on your model:
+
+    user.provisioning_uri #This assumes a user model with an email attributes
+
+This provisioning uri can then be turned in to a QR code if desired so that users may add the app to Google Authenticator easily.  Once this is done they may retrieve a one-time password directly from the Google Authenticator app as well as through whatever method you define in `send_two_factor_authentication_code`
