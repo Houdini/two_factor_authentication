@@ -20,7 +20,7 @@ module Devise
             end
           end
         end
-        ::Devise::Models.config(self, :login_code_random_pattern, :max_login_attempts)
+        ::Devise::Models.config(self, :max_login_attempts)
       end
 
       module InstanceMethodsOnActivation
