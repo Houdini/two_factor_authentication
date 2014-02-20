@@ -7,8 +7,8 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def update
     render :show and return if params[:code].nil?
-    md5 = Digest::MD5.hexdigest(params[:code])
-    if md5.eql?(resource.second_factor_pass_code)
+
+    if resource.authenticate_otp(params[:code])
       warden.session(resource_name)[:need_two_factor_authentication] = false
       sign_in resource_name, resource, :bypass => true
       redirect_to stored_location_for(resource_name) || :root
