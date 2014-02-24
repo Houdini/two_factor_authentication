@@ -4,6 +4,8 @@ class TwoFactorAuthenticationAddTo<%= table_name.camelize %> < ActiveRecord::Mig
       t.string   :otp_secret_key
       t.integer  :second_factor_attempts_count, :default => 0
     end
+
+    add_index :<%= table_name %>, :otp_secret_key, :unique => true
   end
 
   def down
