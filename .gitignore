@@ -18,3 +18,4 @@ patches-*
 capybara-*.html
 dump.rdb
 *.ids
+.rbenv-version

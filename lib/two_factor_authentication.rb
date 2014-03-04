@@ -1,15 +1,18 @@
 require 'two_factor_authentication/version'
-require 'randexp'
 require 'devise'
-require 'digest'
 require 'active_support/concern'
+require "active_model"
+require "active_record"
+require "active_support/core_ext/class/attribute_accessors"
+require "cgi"
+require "rotp"
 
 module Devise
-  mattr_accessor :login_code_random_pattern
-  @@login_code_random_pattern = /\w+/
-
   mattr_accessor :max_login_attempts
   @@max_login_attempts = 3
+
+  mattr_accessor :allowed_otp_drift_seconds
+  @@allowed_otp_drift_seconds = 30
 end
 
 module TwoFactorAuthentication

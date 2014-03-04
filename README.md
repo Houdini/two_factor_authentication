@@ -32,6 +32,20 @@ Finally, run the migration with:
 
     bundle exec rake db:migrate
 
+Add the following line to your model to fully enable two-factor auth:
+
+    has_one_time_password
+
+Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
+
+    config.max_login_attempts = 3
+    config.allowed_otp_drift_seconds = 30
+
+Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
+
+    def send_two_factor_authentication_code
+      # use Model#otp_code and send via SMS, etc.
+    end
 
 ### Manual installation
 
@@ -42,23 +56,22 @@ To manually enable two factor authentication for the User model, you should add 
          :recoverable, :rememberable, :trackable, :validatable, :two_factor_authenticatable
 ```
 
-Two default parameters
+Add the following line to your model to fully enable two-factor auth:
 
-```ruby
-  config.devise.login_code_random_pattern = /\w+/
-  config.devise.max_login_attempts = 3
-```
+    has_one_time_password
 
-Possible random patterns
+Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
 
-```ruby
-/\d{5}/
-/\w{4,8}/
-```
+    config.max_login_attempts = 3
+    config.allowed_otp_drift_seconds = 30
 
-see more https://github.com/benburkert/randexp
+Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
 
-### Customisation
+    def send_two_factor_authentication_code
+      # use Model#otp_code and send via SMS, etc.
+    end
+
+### Customisation and Usage
 
 By default second factor authentication enabled for each user, you can change it with this method in your User model:
 
@@ -70,21 +83,8 @@ By default second factor authentication enabled for each user, you can change it
 
 this will disable two factor authentication for local users
 
-Your send sms logic should be in this method in your User model:
+This gem is compatible with Google Authenticator (https://support.google.com/accounts/answer/1066447?hl=en).  You can generate provisioning uris by invoking the following method on your model:
 
-```ruby
-  def send_two_factor_authentication_code(code)
-    puts code
-  end
-```
+    user.provisioning_uri #This assumes a user model with an email attributes
 
-This example just puts the code in the logs.
-
-### External dependencies
-
-Randexp requires words files (Check if it is installed in /usr/share/dict/words or /usr/dict/words), 
-you might need install it:
-
-```bash
-apt-get install wbritish # or whichever you require
-```
+This provisioning uri can then be turned in to a QR code if desired so that users may add the app to Google Authenticator easily.  Once this is done they may retrieve a one-time password directly from the Google Authenticator app as well as through whatever method you define in `send_two_factor_authentication_code`
