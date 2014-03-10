@@ -67,7 +67,7 @@ Set config values if desired for maximum second factor attempts count and allowe
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
 
-    def send_two_factor_authentication_code
+    def send_two_factor_authentication_code(code)
       # use Model#otp_code and send via SMS, etc.
     end
 
