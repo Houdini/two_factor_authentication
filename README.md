@@ -88,3 +88,7 @@ This gem is compatible with Google Authenticator (https://support.google.com/acc
     user.provisioning_uri #This assumes a user model with an email attributes
 
 This provisioning uri can then be turned in to a QR code if desired so that users may add the app to Google Authenticator easily.  Once this is done they may retrieve a one-time password directly from the Google Authenticator app as well as through whatever method you define in `send_two_factor_authentication_code`
+
+### Example
+
+[TwoFactorAuthenticationExample](https://github.com/Houdini/TwoFactorAuthenticationExample)
