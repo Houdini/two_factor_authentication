@@ -1,7 +1,6 @@
 require 'spec_helper'
 include AuthenticatedModelHelper
 
-
 describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
   let(:instance) { AuthenticatedModelHelper.create_new_user }
   subject { instance.otp_code(time) }
@@ -66,5 +65,27 @@ describe Devise::Models::TwoFactorAuthenticatable, '#send_two_factor_authenticat
   it "should be overrideable" do
     instance = AuthenticatedModelHelper.create_new_user_with_overrides
     expect(instance.send_two_factor_authentication_code).to eq("Code sent")
+  end
+end
+
+describe Devise::Models::TwoFactorAuthenticatable, '#populate_otp_column' do
+  let(:instance) { AuthenticatedModelHelper.create_new_user }
+
+  it "populates otp_column on create" do
+    expect(instance.otp_secret_key).to be_nil
+
+    instance.run_callbacks :create # populate_otp_column called via before_create
+
+    expect(instance.otp_secret_key).to match(%r{\w{16}})
+  end
+
+  it "repopulates otp_column" do
+    instance.run_callbacks :create
+    original_key = instance.otp_secret_key
+
+    instance.populate_otp_column
+
+    expect(instance.otp_secret_key).to match(%r{\w{16}})
+    expect(instance.otp_secret_key).to_not eq(original_key)
   end
 end

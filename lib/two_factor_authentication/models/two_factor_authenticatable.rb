@@ -12,7 +12,7 @@ module Devise
 
           include InstanceMethodsOnActivation
 
-          before_create { self.otp_column = ROTP::Base32.random_base32 }
+          before_create { populate_otp_column }
 
           if respond_to?(:attributes_protected_by_default)
             def self.attributes_protected_by_default #:nodoc:
@@ -58,6 +58,10 @@ module Devise
 
         def max_login_attempts?
           second_factor_attempts_count >= self.class.max_login_attempts
+        end
+
+        def populate_otp_column
+          self.otp_column = ROTP::Base32.random_base32
         end
 
       end
