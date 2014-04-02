@@ -35,9 +35,9 @@ module Devise
           ROTP::TOTP.new(self.otp_column).at(time)
         end
 
-        def provisioning_uri(account = nil)
+        def provisioning_uri(account = nil, options = {})
           account ||= self.email if self.respond_to?(:email)
-          ROTP::TOTP.new(self.otp_column).provisioning_uri(account)
+          ROTP::TOTP.new(self.otp_column, options).provisioning_uri(account)
         end
 
         def otp_column
