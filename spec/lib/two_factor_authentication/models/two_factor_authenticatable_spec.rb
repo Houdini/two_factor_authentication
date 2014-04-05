@@ -119,3 +119,36 @@ describe Devise::Models::TwoFactorAuthenticatable, '#populate_otp_column' do
     expect(instance.otp_secret_key).to_not eq(original_key)
   end
 end
+
+describe Devise::Models::TwoFactorAuthenticatable, '#max_login_attempts' do
+  let(:instance) { AuthenticatedModelHelper.create_new_user }
+
+  before do
+    @original_max_login_attempts = User.max_login_attempts
+    User.max_login_attempts = 3
+  end
+
+  after { User.max_login_attempts = @original_max_login_attempts }
+
+  it "returns class setting" do
+    expect(instance.max_login_attempts).to eq(3)
+  end
+
+  it "returns false as boolean" do
+    instance.second_factor_attempts_count = nil
+    expect(instance.max_login_attempts?).to be_false
+    instance.second_factor_attempts_count = 0
+    expect(instance.max_login_attempts?).to be_false
+    instance.second_factor_attempts_count = 1
+    expect(instance.max_login_attempts?).to be_false
+    instance.second_factor_attempts_count = 2
+    expect(instance.max_login_attempts?).to be_false
+  end
+
+  it "returns true as boolean after too many attempts" do
+    instance.second_factor_attempts_count = 3
+    expect(instance.max_login_attempts?).to be_true
+    instance.second_factor_attempts_count = 4
+    expect(instance.max_login_attempts?).to be_true
+  end
+end

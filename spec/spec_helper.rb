@@ -3,9 +3,7 @@ require "bundler/setup"
 
 require 'two_factor_authentication'
 
-
 Dir["#{Dir.pwd}/spec/support/**/*.rb"].each {|f| require f}
-
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

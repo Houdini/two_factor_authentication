@@ -57,7 +57,11 @@ module Devise
         end
 
         def max_login_attempts?
-          second_factor_attempts_count >= self.class.max_login_attempts
+          second_factor_attempts_count.to_i >= max_login_attempts.to_i
+        end
+
+        def max_login_attempts
+          self.class.max_login_attempts
         end
 
         def populate_otp_column
