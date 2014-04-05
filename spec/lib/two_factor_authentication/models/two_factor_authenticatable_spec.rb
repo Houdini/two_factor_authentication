@@ -96,5 +96,26 @@ describe Devise::Models::TwoFactorAuthenticatable, '#provisioning_uri' do
     expect(params['issuer'].shift).to eq('Magic')
     expect(params['secret'].shift).to match(%r{\w{16}})
   end
+end
 
+describe Devise::Models::TwoFactorAuthenticatable, '#populate_otp_column' do
+  let(:instance) { AuthenticatedModelHelper.create_new_user }
+
+  it "populates otp_column on create" do
+    expect(instance.otp_secret_key).to be_nil
+
+    instance.run_callbacks :create # populate_otp_column called via before_create
+
+    expect(instance.otp_secret_key).to match(%r{\w{16}})
+  end
+
+  it "repopulates otp_column" do
+    instance.run_callbacks :create
+    original_key = instance.otp_secret_key
+
+    instance.populate_otp_column
+
+    expect(instance.otp_secret_key).to match(%r{\w{16}})
+    expect(instance.otp_secret_key).to_not eq(original_key)
+  end
 end
