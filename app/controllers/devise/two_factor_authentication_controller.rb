@@ -35,11 +35,10 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
     def prepare_and_validate
       redirect_to :root and return if resource.nil?
-      @limit = resource.class.max_login_attempts
+      @limit = resource.max_login_attempts
       if resource.max_login_attempts?
-        binding.pry
         sign_out(resource)
-        render :template => 'devise/two_factor_authentication/max_login_attempts_reached' and return
+        render :max_login_attempts_reached and return
       end
     end
 end
