@@ -7,8 +7,14 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <p class="flash notice"><%= notice %></p>
-    <p class="flash alert"><%= alert %></p>
+    <nav>
+      <% if user_signed_in? %>
+        You are signed in as <%= current_user.nickname %>
+      <% else %>
+        You are signed out
+      <% end %>
+    </nav>
+    <%= render_flash %>
     <%= yield %>
   </body>
 </html>

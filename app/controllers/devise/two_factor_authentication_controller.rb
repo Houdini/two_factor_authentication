@@ -17,10 +17,10 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     else
       resource.second_factor_attempts_count += 1
       resource.save
-      set_flash_message :error, :attempt_failed
+      flash.now[:error] = find_message(:attempt_failed)
       if resource.max_login_attempts?
         sign_out(resource)
-        render :template => 'devise/two_factor_authentication/max_login_attempts_reached' and return
+        render :max_login_attempts_reached
       else
         render :show
       end
@@ -37,6 +37,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
       redirect_to :root and return if resource.nil?
       @limit = resource.class.max_login_attempts
       if resource.max_login_attempts?
+        binding.pry
         sign_out(resource)
         render :template => 'devise/two_factor_authentication/max_login_attempts_reached' and return
       end

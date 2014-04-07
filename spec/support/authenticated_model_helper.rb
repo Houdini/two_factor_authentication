@@ -10,6 +10,7 @@ module AuthenticatedModelHelper
 
   def valid_attributes(attributes={})
     {
+      nickname: 'Marissa',
       email: generate_unique_email,
       password: 'password',
       password_confirmation: 'password'
