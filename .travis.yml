@@ -13,3 +13,8 @@ rvm:
 matrix:
   allow_failures:
     - env: "RAILS_VERSION=master"
+
+before_script:
+  - bundle exec rake app:db:migrate
+
+script: bundle exec rake spec
