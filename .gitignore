@@ -19,5 +19,3 @@ capybara-*.html
 dump.rdb
 *.ids
 .rbenv-version
-*/**/log/*
-*/**/*.sqlite3
