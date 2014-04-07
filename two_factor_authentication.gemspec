@@ -29,7 +29,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'randexp'
   s.add_runtime_dependency 'rotp'
 
-  s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'capybara'
 end

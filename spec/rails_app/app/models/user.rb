@@ -4,4 +4,8 @@ class User < ActiveRecord::Base
          :two_factor_authenticatable
 
   has_one_time_password
+
+  def send_two_factor_authentication_code
+    # No op
+  end
 end
