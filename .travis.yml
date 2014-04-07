@@ -1,0 +1,14 @@
+env:
+  - "RAILS_VERSION=3.1"
+  - "RAILS_VERSION=3.2"
+  - "RAILS_VERSION=4.0"
+  - "RAILS_VERSION=master"
+
+rvm:
+  - 1.9.3
+  - 2.0
+  - 2.1
+
+matrix:
+  allow_failures:
+    - env: "RAILS_VERSION=master"
