@@ -1,28 +1,7 @@
 module AuthenticatedModelHelper
 
-  class POROUser
-    extend ActiveModel::Callbacks
-    include ActiveModel::Validations
-    include Devise::Models::TwoFactorAuthenticatable
-
-    define_model_callbacks :create
-    attr_accessor :otp_secret_key, :email, :second_factor_attempts_count
-
-    has_one_time_password
-  end
-
-  class UserWithOverrides < POROUser
-    def send_two_factor_authentication_code
-      "Code sent"
-    end
-  end
-
-  def create_new_user
-    POROUser.new
-  end
-
-  def create_new_user_with_overrides
-    UserWithOverrides.new
+  def build_guest_user
+    GuestUser.new
   end
 
   def create_user(attributes={})
