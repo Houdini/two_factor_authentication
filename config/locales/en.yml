@@ -1,4 +1,5 @@
 en:
   devise:
     two_factor_authentication:
+      success: "Two factor authentication successful."
       attempt_failed: "Attempt failed."

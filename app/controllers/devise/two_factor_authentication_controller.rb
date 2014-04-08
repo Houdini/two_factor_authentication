@@ -11,15 +11,16 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     if resource.authenticate_otp(params[:code])
       warden.session(resource_name)[:need_two_factor_authentication] = false
       sign_in resource_name, resource, :bypass => true
+      set_flash_message :notice, :success
       redirect_to stored_location_for(resource_name) || :root
       resource.update_attribute(:second_factor_attempts_count, 0)
     else
       resource.second_factor_attempts_count += 1
       resource.save
-      set_flash_message :error, :attempt_failed
+      flash.now[:error] = find_message(:attempt_failed)
       if resource.max_login_attempts?
         sign_out(resource)
-        render :template => 'devise/two_factor_authentication/max_login_attempts_reached' and return
+        render :max_login_attempts_reached
       else
         render :show
       end
@@ -34,10 +35,10 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
     def prepare_and_validate
       redirect_to :root and return if resource.nil?
-      @limit = resource.class.max_login_attempts
+      @limit = resource.max_login_attempts
       if resource.max_login_attempts?
         sign_out(resource)
-        render :template => 'devise/two_factor_authentication/max_login_attempts_reached' and return
+        render :max_login_attempts_reached and return
       end
     end
 end

@@ -1,29 +1,28 @@
 module AuthenticatedModelHelper
 
-  class User
-    extend ActiveModel::Callbacks
-    include ActiveModel::Validations
-    include Devise::Models::TwoFactorAuthenticatable
-
-    define_model_callbacks :create
-    attr_accessor :otp_secret_key, :email, :second_factor_attempts_count
-
-    has_one_time_password
+  def build_guest_user
+    GuestUser.new
   end
 
-  class UserWithOverrides < User
-
-    def send_two_factor_authentication_code
-      "Code sent"
-    end
+  def create_user(attributes={})
+    User.create!(valid_attributes(attributes))
   end
 
-  def create_new_user
-    User.new
+  def valid_attributes(attributes={})
+    {
+      nickname: 'Marissa',
+      email: generate_unique_email,
+      password: 'password',
+      password_confirmation: 'password'
+    }.merge(attributes)
   end
 
-  def create_new_user_with_overrides
-    UserWithOverrides.new
+  def generate_unique_email
+    @@email_count ||= 0
+    @@email_count += 1
+    "user#{@@email_count}@example.com"
   end
 
 end
+
+RSpec.configuration.send(:include, AuthenticatedModelHelper)

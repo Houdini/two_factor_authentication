@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dummy</title>
+    <%= stylesheet_link_tag    "application", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <nav>
+      <% if user_signed_in? %>
+        You are signed in as <%= current_user.nickname %>
+      <% else %>
+        You are signed out
+      <% end %>
+    </nav>
+    <%= render_flash %>
+    <%= yield %>
+  </body>
+</html>

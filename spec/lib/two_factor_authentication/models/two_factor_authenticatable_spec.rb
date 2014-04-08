@@ -2,7 +2,7 @@ require 'spec_helper'
 include AuthenticatedModelHelper
 
 describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
-  let(:instance) { AuthenticatedModelHelper.create_new_user }
+  let(:instance) { build_guest_user }
   subject { instance.otp_code(time) }
   let(:time) { 1392852456 }
 
@@ -32,7 +32,7 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
 end
 
 describe Devise::Models::TwoFactorAuthenticatable, '#authenticate_otp' do
-  let(:instance) { AuthenticatedModelHelper.create_new_user }
+  let(:instance) { build_guest_user }
 
   before :each do
     instance.otp_secret_key = "2z6hxkdwi3uvrnpn"
@@ -54,22 +54,24 @@ describe Devise::Models::TwoFactorAuthenticatable, '#authenticate_otp' do
 end
 
 describe Devise::Models::TwoFactorAuthenticatable, '#send_two_factor_authentication_code' do
+  let(:instance) { build_guest_user }
 
   it "should raise an error by default" do
-    instance = AuthenticatedModelHelper.create_new_user
     expect {
       instance.send_two_factor_authentication_code
     }.to raise_error(NotImplementedError)
   end
 
   it "should be overrideable" do
-    instance = AuthenticatedModelHelper.create_new_user_with_overrides
+    def instance.send_two_factor_authentication_code
+      "Code sent"
+    end
     expect(instance.send_two_factor_authentication_code).to eq("Code sent")
   end
 end
 
 describe Devise::Models::TwoFactorAuthenticatable, '#provisioning_uri' do
-  let(:instance) { AuthenticatedModelHelper.create_new_user }
+  let(:instance) { build_guest_user }
 
   before do
     instance.email = "houdini@example.com"
@@ -99,7 +101,7 @@ describe Devise::Models::TwoFactorAuthenticatable, '#provisioning_uri' do
 end
 
 describe Devise::Models::TwoFactorAuthenticatable, '#populate_otp_column' do
-  let(:instance) { AuthenticatedModelHelper.create_new_user }
+  let(:instance) { build_guest_user }
 
   it "populates otp_column on create" do
     expect(instance.otp_secret_key).to be_nil
@@ -121,14 +123,14 @@ describe Devise::Models::TwoFactorAuthenticatable, '#populate_otp_column' do
 end
 
 describe Devise::Models::TwoFactorAuthenticatable, '#max_login_attempts' do
-  let(:instance) { AuthenticatedModelHelper.create_new_user }
+  let(:instance) { build_guest_user }
 
   before do
-    @original_max_login_attempts = User.max_login_attempts
-    User.max_login_attempts = 3
+    @original_max_login_attempts = GuestUser.max_login_attempts
+    GuestUser.max_login_attempts = 3
   end
 
-  after { User.max_login_attempts = @original_max_login_attempts }
+  after { GuestUser.max_login_attempts = @original_max_login_attempts }
 
   it "returns class setting" do
     expect(instance.max_login_attempts).to eq(3)
