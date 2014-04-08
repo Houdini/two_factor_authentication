@@ -19,7 +19,6 @@ Once that's done, run:
 
     bundle install
 
-
 ### Automatic installation
 
 In order to add two factor authorisation to a model, run the command:
@@ -27,7 +26,7 @@ In order to add two factor authorisation to a model, run the command:
     bundle exec rails g two_factor_authentication MODEL
 
 Where MODEL is your model name (e.g. User or Admin). This generator will add `:two_factor_authenticatable` to your model
-and create a migration in `db/migrate/`, which will add `::second_factor_pass_code` and `:second_factor_attempts_count` to your table.
+and create a migration in `db/migrate/`, which will add `:otp_secret_key` and `:second_factor_attempts_count` to your table.
 Finally, run the migration with:
 
     bundle exec rake db:migrate
@@ -38,22 +37,26 @@ Add the following line to your model to fully enable two-factor auth:
 
 Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
 
-    config.max_login_attempts = 3
-    config.allowed_otp_drift_seconds = 30
+```ruby
+config.max_login_attempts = 3
+config.allowed_otp_drift_seconds = 30
+```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
 
-    def send_two_factor_authentication_code
-      # use Model#otp_code and send via SMS, etc.
-    end
+```ruby
+def send_two_factor_authentication_code
+  # use Model#otp_code and send via SMS, etc.
+end
+```
 
 ### Manual installation
 
 To manually enable two factor authentication for the User model, you should add two_factor_authentication to your devise line, like:
 
 ```ruby
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :two_factor_authenticatable
+devise :database_authenticatable, :registerable,
+       :recoverable, :rememberable, :trackable, :validatable, :two_factor_authenticatable
 ```
 
 Add the following line to your model to fully enable two-factor auth:
@@ -62,23 +65,27 @@ Add the following line to your model to fully enable two-factor auth:
 
 Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
 
-    config.max_login_attempts = 3
-    config.allowed_otp_drift_seconds = 30
+```ruby
+config.max_login_attempts = 3
+config.allowed_otp_drift_seconds = 30
+```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
 
-    def send_two_factor_authentication_code
-      # use Model#otp_code and send via SMS, etc.
-    end
+```ruby
+def send_two_factor_authentication_code
+  # use Model#otp_code and send via SMS, etc.
+end
+```
 
 ### Customisation and Usage
 
 By default second factor authentication enabled for each user, you can change it with this method in your User model:
 
 ```ruby
-  def need_two_factor_authentication?(request)
-    request.ip != '127.0.0.1'
-  end
+def need_two_factor_authentication?(request)
+  request.ip != '127.0.0.1'
+end
 ```
 
 this will disable two factor authentication for local users
