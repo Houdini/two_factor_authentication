@@ -1,4 +1,6 @@
-## Two factor authentication for Devise
+# Two factor authentication for Devise
+
+[![Build Status](https://travis-ci.org/Houdini/two_factor_authentication.svg?branch=master)](https://travis-ci.org/Houdini/two_factor_authentication)
 
 ## Features
 
