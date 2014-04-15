@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 feature "User of two factor authentication" do
+  let(:user) { create_user }
 
   scenario "must be logged in" do
     visit user_two_factor_authentication_path
@@ -9,8 +10,21 @@ feature "User of two factor authentication" do
     expect(page).to have_content("You are signed out")
   end
 
+  scenario "sends two factor authentication code after sign in" do
+    SMSProvider.messages.should be_empty
+
+    visit new_user_session_path
+    complete_sign_in_form_for(user)
+
+    expect(page).to have_content "Enter your personal code"
+
+    SMSProvider.messages.size.should eq(1)
+    message = SMSProvider.last_message
+    expect(message.to).to eq(user.phone_number)
+    expect(message.body).to eq(user.otp_code)
+  end
+
   context "when logged in" do
-    let(:user) { create_user }
 
     background do
       login_as user
