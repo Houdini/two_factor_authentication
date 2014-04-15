@@ -37,3 +37,14 @@ module TwoFactorAuthentication
     end
   end
 end
+
+
+module Devise
+  module Colntrollers
+    module Helpers
+      def is_not_fully_authenticated?
+        session["warden.user.user.session"].try(:[], :need_two_factor_authentication)
+      end
+    end
+  end
+end
