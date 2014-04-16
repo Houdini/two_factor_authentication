@@ -1,3 +1,3 @@
 module TwoFactorAuthentication
-  VERSION = "0.3".freeze
+  VERSION = "1.1".freeze
 end
