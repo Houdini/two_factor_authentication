@@ -25,7 +25,15 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
       let(:time) { 1392852756 }
 
       it "should return a known result" do
-        expect(subject).to eq(562202)
+        expect(subject).to eq('562202')
+      end
+    end
+
+    context "with a known time yielding a result with less than 6 digits" do
+      let(:time) { 1393065856 }
+
+      it "should return a known result padded with zeroes" do
+        expect(subject).to eq('007672')
       end
     end
   end
