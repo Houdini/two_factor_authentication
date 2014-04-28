@@ -10,6 +10,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
     if resource.authenticate_otp(params[:code])
       warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
+      warden.session(resource_name)[TwoFactorAuthentication::TWO_FACTOR_OK] = true
       sign_in resource_name, resource, :bypass => true
       redirect_to stored_location_for(resource_name) || :root
       resource.update_attribute(:second_factor_attempts_count, 0)

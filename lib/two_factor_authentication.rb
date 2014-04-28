@@ -17,6 +17,7 @@ end
 
 module TwoFactorAuthentication
   NEED_AUTHENTICATION = :need_two_factor_authentication
+  TWO_FACTOR_OK = :two_factor_ok
 
   autoload :Schema, 'two_factor_authentication/schema'
   module Controllers
