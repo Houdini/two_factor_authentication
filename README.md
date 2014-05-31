@@ -99,6 +99,24 @@ This gem is compatible with Google Authenticator (https://support.google.com/acc
 
 This provisioning uri can then be turned in to a QR code if desired so that users may add the app to Google Authenticator easily.  Once this is done they may retrieve a one-time password directly from the Google Authenticator app as well as through whatever method you define in `send_two_factor_authentication_code`
 
+#### Overriding the view
+
+The default view that shows the form can be overridden by first adding a folder named: "two_factor_authentication" inside "app/views/devise", in here you want to create a "show.html.erb" view.
+
+The full path should be "app/views/devise/two_factor_authentication/show.html.erb"
+
+```html
+<h2>Hi, you received a code by email, please enter it below, thanks!</h2>
+
+<%= form_tag([resource_name, :two_factor_authentication], :method => :put) do %>
+  <%= text_field_tag :code %>
+  <%= submit_tag "Log in!" %>
+<% end %>
+
+<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+
+```
+
 ### Example
 
 [TwoFactorAuthenticationExample](https://github.com/Houdini/TwoFactorAuthenticationExample)
