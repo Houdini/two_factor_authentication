@@ -117,6 +117,24 @@ The full path should be "app/views/devise/two_factor_authentication/show.html.er
 
 ```
 
+#### Updating existing users with OTP secret key
+
+If you have existing users that needs to be provided with a OTP secret key, so they can take benefit of the two factor authentication, create a rake. It could look like this one below:
+
+```ruby
+desc "rake task to update users with otp secret key"
+task :update_users_with_otp_secret_key  => :environment do
+	users = User.all
+
+	users.each do |user|
+		key = ROTP::Base32.random_base32
+		user.update_attributes(:otp_secret_key => key)
+		user.save
+		puts "Rake[:update_users_with_otp_secret_key] => User '#{user.email}' OTP secret key set to '#{key}'"
+	end
+end
+```
+
 ### Example
 
 [TwoFactorAuthenticationExample](https://github.com/Houdini/TwoFactorAuthenticationExample)
