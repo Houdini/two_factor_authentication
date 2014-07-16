@@ -2,7 +2,7 @@ require 'spec_helper'
 
 include Warden::Test::Helpers
 
-describe HomeController do
+describe HomeController, :type => :controller do
   context "passed only 1st factor auth" do
     let(:user) { create_user }
 
@@ -11,10 +11,8 @@ describe HomeController do
         login_as user, scope: :user
         visit user_two_factor_authentication_path
 
-
-        controller.is_fully_authenticated?.should be_true
+        expect(controller.is_fully_authenticated?).to be_truthy
       end
     end
-
   end
 end

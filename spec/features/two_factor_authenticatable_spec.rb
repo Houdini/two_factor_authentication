@@ -11,14 +11,14 @@ feature "User of two factor authentication" do
   end
 
   scenario "sends two factor authentication code after sign in" do
-    SMSProvider.messages.should be_empty
+    expect(SMSProvider.messages).to be_empty
 
     visit new_user_session_path
     complete_sign_in_form_for(user)
 
     expect(page).to have_content "Enter your personal code"
 
-    SMSProvider.messages.size.should eq(1)
+    expect(SMSProvider.messages.size).to eq(1)
     message = SMSProvider.last_message
     expect(message.to).to eq(user.phone_number)
     expect(message.body).to eq(user.otp_code)

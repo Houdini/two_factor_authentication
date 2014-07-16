@@ -146,19 +146,19 @@ describe Devise::Models::TwoFactorAuthenticatable, '#max_login_attempts' do
 
   it "returns false as boolean" do
     instance.second_factor_attempts_count = nil
-    expect(instance.max_login_attempts?).to be_false
+    expect(instance.max_login_attempts?).to be_falsey
     instance.second_factor_attempts_count = 0
-    expect(instance.max_login_attempts?).to be_false
+    expect(instance.max_login_attempts?).to be_falsey
     instance.second_factor_attempts_count = 1
-    expect(instance.max_login_attempts?).to be_false
+    expect(instance.max_login_attempts?).to be_falsey
     instance.second_factor_attempts_count = 2
-    expect(instance.max_login_attempts?).to be_false
+    expect(instance.max_login_attempts?).to be_falsey
   end
 
   it "returns true as boolean after too many attempts" do
     instance.second_factor_attempts_count = 3
-    expect(instance.max_login_attempts?).to be_true
+    expect(instance.max_login_attempts?).to be_truthy
     instance.second_factor_attempts_count = 4
-    expect(instance.max_login_attempts?).to be_true
+    expect(instance.max_login_attempts?).to be_truthy
   end
 end
