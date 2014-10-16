@@ -45,7 +45,7 @@ feature "User of two factor authentication" do
     end
 
     scenario "is redirected to TFA when path requires authentication" do
-      visit dashboard_path
+      visit dashboard_path + "?A=param%20a&B=param%20b"
 
       expect(page).to_not have_content("Your Personal Dashboard")
 
@@ -54,6 +54,8 @@ feature "User of two factor authentication" do
 
       expect(page).to have_content("Your Personal Dashboard")
       expect(page).to have_content("You are signed in as Marissa")
+      expect(page).to have_content("Param A is param a")
+      expect(page).to have_content("Param B is param b")
     end
 
     scenario "is locked out after max failed attempts" do
