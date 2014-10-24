@@ -38,11 +38,12 @@ Add the following line to your model to fully enable two-factor auth:
 
     has_one_time_password
 
-Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
+Set config values, if desired, for maximum second factor attempts count, allowed time drift, and OTP length.
 
 ```ruby
 config.max_login_attempts = 3
 config.allowed_otp_drift_seconds = 30
+config.otp_length = 6
 ```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
@@ -66,11 +67,12 @@ Add the following line to your model to fully enable two-factor auth:
 
     has_one_time_password
 
-Set config values if desired for maximum second factor attempts count and allowed time drift for one-time passwords:
+Set config values, if desired, for maximum second factor attempts count, allowed time drift, and OTP length.
 
 ```ruby
 config.max_login_attempts = 3
 config.allowed_otp_drift_seconds = 30
+config.otp_length = 6
 ```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
@@ -80,6 +82,7 @@ def send_two_factor_authentication_code
   # use Model#otp_code and send via SMS, etc.
 end
 ```
+
 
 ### Customisation and Usage
 

@@ -20,19 +20,19 @@ module Devise
             end
           end
         end
-        ::Devise::Models.config(self, :max_login_attempts, :allowed_otp_drift_seconds)
+        ::Devise::Models.config(self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length)
       end
 
       module InstanceMethodsOnActivation
         def authenticate_otp(code, options = {})
-          totp = ROTP::TOTP.new(self.otp_column)
+          totp = ROTP::TOTP.new(self.otp_column, { digits: options[:otp_length] || self.class.otp_length })
           drift = options[:drift] || self.class.allowed_otp_drift_seconds
 
           totp.verify_with_drift(code, drift)
         end
 
-        def otp_code(time = Time.now)
-          ROTP::TOTP.new(self.otp_column).at(time, true)
+        def otp_code(time = Time.now, options = {})
+          ROTP::TOTP.new(self.otp_column, { digits: options[:otp_length] || self.class.otp_length }).at(time, true)
         end
 
         def provisioning_uri(account = nil, options = {})

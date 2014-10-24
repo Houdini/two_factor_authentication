@@ -21,11 +21,15 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
       subject
     end
 
+    it "should be configured length" do
+      expect(subject.length).to eq(Devise.otp_length)
+    end
+
     context "with a known time" do
       let(:time) { 1392852756 }
 
       it "should return a known result" do
-        expect(subject).to eq('562202')
+        expect(subject).to eq("0000000524562202".split(//).last(Devise.otp_length).join)
       end
     end
 
@@ -33,7 +37,7 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
       let(:time) { 1393065856 }
 
       it "should return a known result padded with zeroes" do
-        expect(subject).to eq('007672')
+        expect(subject).to eq("0000001608007672".split(//).last(Devise.otp_length).join)
       end
     end
   end

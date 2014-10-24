@@ -13,6 +13,9 @@ module Devise
 
   mattr_accessor :allowed_otp_drift_seconds
   @@allowed_otp_drift_seconds = 30
+
+  mattr_accessor :otp_length
+  @@otp_length = 6
 end
 
 module TwoFactorAuthentication
