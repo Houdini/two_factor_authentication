@@ -8,7 +8,7 @@ module FeaturesSpecHelper
   def complete_sign_in_form_for(user)
     fill_in "Email", with: user.email
     fill_in "Password", with: 'password'
-    click_button "Sign in"
+    find('.actions input').click # 'Sign in' or 'Log in'
   end
 end
 
