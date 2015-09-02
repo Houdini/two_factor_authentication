@@ -9,6 +9,7 @@
 * configure max login attempts
 * per user level control if he really need two factor authentication
 * your own sms logic
+* configurable period where users won't be asked for 2FA again
 
 ## Configuration
 
@@ -38,12 +39,13 @@ Add the following line to your model to fully enable two-factor auth:
 
     has_one_time_password
 
-Set config values, if desired, for maximum second factor attempts count, allowed time drift, and OTP length.
+Set config values, if desired:
 
 ```ruby
-config.max_login_attempts = 3
-config.allowed_otp_drift_seconds = 30
-config.otp_length = 6
+config.max_login_attempts = 3  # Maximum second factor attempts count
+config.allowed_otp_drift_seconds = 30  # Allowed time drift
+config.otp_length = 6  # OTP code length
+config.remember_otp_session_for_seconds = 30.days  # Time before browser has to enter OTP code again
 ```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
@@ -67,12 +69,13 @@ Add the following line to your model to fully enable two-factor auth:
 
     has_one_time_password
 
-Set config values, if desired, for maximum second factor attempts count, allowed time drift, and OTP length.
+Set config values, if desired:
 
 ```ruby
-config.max_login_attempts = 3
-config.allowed_otp_drift_seconds = 30
-config.otp_length = 6
+config.max_login_attempts = 3  # Maximum second factor attempts count
+config.allowed_otp_drift_seconds = 30  # Allowed time drift
+config.otp_length = 6  # OTP code length
+config.remember_otp_session_for_seconds = 30.days  # Time before browser has to enter OTP code again
 ```
 
 Override the method to send one-time passwords in your model, this is automatically called when a user logs in:
