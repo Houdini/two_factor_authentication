@@ -9,7 +9,7 @@ describe Devise::Models::TwoFactorAuthenticatable, '#otp_code' do
   it "should return an error if no secret is set" do
     expect {
       subject
-    }.to raise_error
+    }.to raise_error Exception
   end
 
   context "secret is set" do
