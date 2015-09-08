@@ -20,7 +20,7 @@ module Devise
             end
           end
         end
-        ::Devise::Models.config(self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length)
+        ::Devise::Models.config(self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length, :remember_otp_session_for_seconds)
       end
 
       module InstanceMethodsOnActivation

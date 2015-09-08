@@ -84,5 +84,43 @@ feature "User of two factor authentication" do
       expect(page).to have_content("Access completely denied")
       expect(page).to have_content("You are signed out")
     end
+
+    describe "rememberable TFA" do
+      before do
+        @original_remember_otp_session_for_seconds = User.remember_otp_session_for_seconds
+        User.remember_otp_session_for_seconds = 30.days
+      end
+
+      after do
+        User.remember_otp_session_for_seconds = @original_remember_otp_session_for_seconds
+      end
+
+      scenario "doesn't require TFA code again within 30 days" do
+        visit user_two_factor_authentication_path
+        fill_in "code", with: user.otp_code
+        click_button "Submit"
+
+        logout
+
+        login_as user
+        visit dashboard_path
+        expect(page).to have_content("Your Personal Dashboard")
+        expect(page).to have_content("You are signed in as Marissa")
+      end
+
+      scenario "requires TFA code again after 30 days" do
+        visit user_two_factor_authentication_path
+        fill_in "code", with: user.otp_code
+        click_button "Submit"
+
+        logout
+
+        Timecop.travel(30.days.from_now)
+        login_as user
+        visit dashboard_path
+        expect(page).to have_content("You are signed in as Marissa")
+        expect(page).to have_content("Enter your personal code")
+      end
+    end
   end
 end

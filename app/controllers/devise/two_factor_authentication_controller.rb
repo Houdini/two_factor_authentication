@@ -9,6 +9,13 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     render :show and return if params[:code].nil?
 
     if resource.authenticate_otp(params[:code])
+      expires_seconds = resource.class.remember_otp_session_for_seconds
+      if expires_seconds && expires_seconds > 0
+        cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
+          value: true,
+          expires: expires_seconds.from_now
+        }
+      end
       warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
       sign_in resource_name, resource, :bypass => true
       set_flash_message :notice, :success
