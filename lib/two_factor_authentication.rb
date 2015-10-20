@@ -5,7 +5,6 @@ require "active_model"
 require "active_record"
 require "active_support/core_ext/class/attribute_accessors"
 require "cgi"
-require "rotp"
 
 module Devise
   mattr_accessor :max_login_attempts
