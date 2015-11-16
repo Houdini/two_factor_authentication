@@ -25,7 +25,7 @@ Once that's done, run:
 
 ### Automatic installation
 
-In order to add two factor authorisation to a model, run the command:
+In order to add two factor authentication to a model, run the command:
 
     bundle exec rails g two_factor_authentication MODEL
 
@@ -69,7 +69,7 @@ Add the following line to your model to fully enable two-factor auth:
 
     has_one_time_password
 
-Set config values, if desired:
+Set config values to devise.rb, if desired:
 
 ```ruby
 config.max_login_attempts = 3  # Maximum second factor attempts count
