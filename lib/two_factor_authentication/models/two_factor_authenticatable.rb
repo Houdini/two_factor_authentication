@@ -1,4 +1,6 @@
 require 'two_factor_authentication/hooks/two_factor_authenticatable'
+require 'rotp'
+
 module Devise
   module Models
     module TwoFactorAuthenticatable

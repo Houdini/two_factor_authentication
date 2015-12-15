@@ -141,6 +141,30 @@ task :update_users_with_otp_secret_key  => :environment do
 end
 ```
 
+#### Executing some code before the OTP is sent when the user signs in
+
+In some cases, you might want to perform some action right after the user signs
+in, but before the OTP is sent. To define this action, create an `OtpSender`
+class that takes the current user as its parameter, and define a `#before_otp`
+instance method. For example:
+```ruby
+class OtpSender
+  def initialize(user)
+    @user = user
+  end
+
+  def before_otp
+    if @user.unconfirmed_mobile.present?
+      reset_mobile_2fa_state
+    end
+  end
+
+  def reset_mobile_2fa_state
+    @user.update(unconfirmed_mobile: nil)
+  end
+end
+```
+
 ### Example
 
 [TwoFactorAuthenticationExample](https://github.com/Houdini/TwoFactorAuthenticationExample)
