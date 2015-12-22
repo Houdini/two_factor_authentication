@@ -123,4 +123,59 @@ feature "User of two factor authentication" do
       end
     end
   end
+
+  describe 'signing in' do
+    scenario 'when UserOtpSender#reset_otp_state is defined' do
+      stub_const 'UserOtpSender', Class.new
+
+      otp_sender = instance_double(UserOtpSender)
+      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
+      expect(otp_sender).to receive(:reset_otp_state)
+
+      visit new_user_session_path
+      complete_sign_in_form_for(user)
+    end
+
+    scenario 'when UserOtpSender#reset_otp_state is not defined' do
+      stub_const 'UserOtpSender', Class.new
+
+      otp_sender = instance_double(UserOtpSender)
+      allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
+
+      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
+      expect(otp_sender).to_not receive(:reset_otp_state)
+
+      visit new_user_session_path
+      complete_sign_in_form_for(user)
+    end
+  end
+
+  describe 'signing out' do
+    scenario 'when UserOtpSender#reset_otp_state is defined' do
+      visit new_user_session_path
+      complete_sign_in_form_for(user)
+
+      stub_const 'UserOtpSender', Class.new
+      otp_sender = instance_double(UserOtpSender)
+
+      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
+      expect(otp_sender).to receive(:reset_otp_state)
+
+      visit destroy_user_session_path
+    end
+
+    scenario 'when UserOtpSender#reset_otp_state is not defined' do
+      visit new_user_session_path
+      complete_sign_in_form_for(user)
+
+      stub_const 'UserOtpSender', Class.new
+      otp_sender = instance_double(UserOtpSender)
+      allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
+
+      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
+      expect(otp_sender).to_not receive(:reset_otp_state)
+
+      visit destroy_user_session_path
+    end
+  end
 end
