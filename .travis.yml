@@ -17,6 +17,9 @@ matrix:
   allow_failures:
     - env: "RAILS_VERSION=master"
 
+before_install:
+  - gem update bundler
+
 before_script:
   - bundle exec rake app:db:migrate
 
