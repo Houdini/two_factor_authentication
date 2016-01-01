@@ -141,6 +141,39 @@ task :update_users_with_otp_secret_key  => :environment do
 end
 ```
 
+#### Executing some code after the user signs in and before they sign out
+
+In some cases, you might want to perform some action right after the user signs
+in, but before the OTP is sent, and also right before the user signs out. One
+scenario where you would need this is if you are requiring users to confirm
+their phone number first before they can receive an OTP. If they enter a wrong
+number, then sign out or close the browser before they confirm, they won't be
+able to confirm their real number. To solve this problem, we need to be able to
+reset their unconfirmed number before they sign out or sign in, and before the
+OTP code is sent.
+
+To define this action, create a `#{user.class}OtpSender` class that takes the
+current user as its parameter, and defines a `#reset_otp_state` instance method.
+For example, if your user's class is `User`, you would create a `UserOtpSender`
+class, like this:
+```ruby
+class UserOtpSender
+  def initialize(user)
+    @user = user
+  end
+
+  def reset_otp_state
+    if @user.unconfirmed_mobile.present?
+      @user.update(unconfirmed_mobile: nil)
+    end
+  end
+end
+```
+If you have different types of users in your app (for example, User and Admin),
+and you need different logic for each type of user, create a second class for
+your admin user, such as `AdminOtpSender`, with its own logic for
+`#reset_otp_state`.
+
 ### Example
 
 [TwoFactorAuthenticationExample](https://github.com/Houdini/TwoFactorAuthenticationExample)
