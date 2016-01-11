@@ -1,7 +1,51 @@
 require 'spec_helper'
+include AuthenticatedModelHelper
 
 feature "User of two factor authentication" do
-  let(:user) { create_user }
+  context 'sending two factor authentication code via SMS' do
+    shared_examples 'sends and authenticates code' do |user, type|
+      before do
+        if type == 'encrypted'
+          allow(User).to receive(:has_one_time_password).with(encrypted: true)
+        end
+      end
+
+      it 'does not send an SMS before the user has signed in' do
+        expect(SMSProvider.messages).to be_empty
+      end
+
+      it 'sends code via SMS after sign in' do
+        visit new_user_session_path
+        complete_sign_in_form_for(user)
+
+        expect(page).to have_content 'Enter your personal code'
+
+        expect(SMSProvider.messages.size).to eq(1)
+        message = SMSProvider.last_message
+        expect(message.to).to eq(user.phone_number)
+        expect(message.body).to eq(user.otp_code)
+      end
+
+      it 'authenticates a valid OTP code' do
+        visit new_user_session_path
+        complete_sign_in_form_for(user)
+
+        expect(page).to have_content('You are signed in as Marissa')
+
+        fill_in 'code', with: user.otp_code
+        click_button 'Submit'
+
+        within('.flash.notice') do
+          expect(page).to have_content('Two factor authentication successful.')
+        end
+
+        expect(current_path).to eq root_path
+      end
+    end
+
+    it_behaves_like 'sends and authenticates code', create_user('not_encrypted')
+    it_behaves_like 'sends and authenticates code', create_user, 'encrypted'
+  end
 
   scenario "must be logged in" do
     visit user_two_factor_authentication_path
@@ -10,38 +54,11 @@ feature "User of two factor authentication" do
     expect(page).to have_content("You are signed out")
   end
 
-  scenario "sends two factor authentication code after sign in" do
-    expect(SMSProvider.messages).to be_empty
-
-    visit new_user_session_path
-    complete_sign_in_form_for(user)
-
-    expect(page).to have_content "Enter your personal code"
-
-    expect(SMSProvider.messages.size).to eq(1)
-    message = SMSProvider.last_message
-    expect(message.to).to eq(user.phone_number)
-    expect(message.body).to eq(user.otp_code)
-  end
-
   context "when logged in" do
+    let(:user) { create_user }
 
     background do
       login_as user
-    end
-
-    scenario "can fill in TFA code" do
-      visit user_two_factor_authentication_path
-
-      expect(page).to have_content("You are signed in as Marissa")
-      expect(page).to have_content("Enter your personal code")
-
-      fill_in "code", with: user.otp_code
-      click_button "Submit"
-
-      within(".flash.notice") do
-        expect(page).to have_content("Two factor authentication successful.")
-      end
     end
 
     scenario "is redirected to TFA when path requires authentication" do
@@ -121,6 +138,12 @@ feature "User of two factor authentication" do
         expect(page).to have_content("You are signed in as Marissa")
         expect(page).to have_content("Enter your personal code")
       end
+    end
+
+    it 'sets the warden session need_two_factor_authentication key to true' do
+      session_hash = { 'need_two_factor_authentication' => true }
+
+      expect(page.get_rack_session_key('warden.user.user.session')).to eq session_hash
     end
   end
 

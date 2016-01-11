@@ -3,6 +3,7 @@ require File.expand_path("../rails_app/config/environment.rb",  __FILE__)
 
 require 'rspec/rails'
 require 'timecop'
+require 'rack_session_access/capybara'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

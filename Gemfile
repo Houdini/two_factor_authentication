@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
 # Specify your gem's dependencies in devise_ip_filter.gemspec
 gemspec
@@ -20,6 +20,11 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.2.0')
   gem "test-unit", "~> 3.0"
 end
 
+group :test, :development do
+  gem 'sqlite3'
+end
+
 group :test do
-  gem "sqlite3"
+  gem 'rack_session_access'
+  gem 'ammeter'
 end

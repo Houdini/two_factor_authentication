@@ -18,6 +18,9 @@ module Devise
 
   mattr_accessor :remember_otp_session_for_seconds
   @@remember_otp_session_for_seconds = 0
+
+  mattr_accessor :otp_secret_encryption_key
+  @@otp_secret_encryption_key = ''
 end
 
 module TwoFactorAuthentication
