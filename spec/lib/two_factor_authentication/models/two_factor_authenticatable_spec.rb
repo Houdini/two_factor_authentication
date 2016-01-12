@@ -224,7 +224,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
         # This error is raised by the encryptor gem
         expect { instance.otp_secret_key = '2z6hxkdwi3uvrnpn' }.
-          to raise_error ArgumentError, 'must specify a :key'
+          to raise_error ArgumentError
       end
 
       it 'passes in the correct options to Encryptor' do
