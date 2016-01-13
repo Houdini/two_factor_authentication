@@ -148,6 +148,8 @@ feature "User of two factor authentication" do
   end
 
   describe 'signing in' do
+    let(:user) { create_user }
+
     scenario 'when UserOtpSender#reset_otp_state is defined' do
       stub_const 'UserOtpSender', Class.new
 
@@ -174,6 +176,8 @@ feature "User of two factor authentication" do
   end
 
   describe 'signing out' do
+    let(:user) { create_user }
+
     scenario 'when UserOtpSender#reset_otp_state is defined' do
       visit new_user_session_path
       complete_sign_in_form_for(user)
