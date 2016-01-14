@@ -24,6 +24,8 @@ Once that's done, run:
 
     bundle install
 
+Note that Ruby 2.0 or greater is required.
+
 ### Installation
 
 #### Automatic initial setup
