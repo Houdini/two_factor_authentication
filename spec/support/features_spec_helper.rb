@@ -10,6 +10,22 @@ module FeaturesSpecHelper
     fill_in "Password", with: 'password'
     find('.actions input').click # 'Sign in' or 'Log in'
   end
+
+  def set_cookie key, value
+    page.driver.browser.set_cookie [key, value].join('=')
+  end
+
+  def get_cookie key
+    Capybara.current_session.driver.request.cookies[key]
+  end
+
+  def set_tfa_cookie value
+    set_cookie TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME, value
+  end
+
+  def get_tfa_cookie
+    get_cookie TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME
+  end
 end
 
 RSpec.configure do |config|
@@ -24,4 +40,3 @@ RSpec.configure do |config|
     Warden.test_reset!
   end
 end
-

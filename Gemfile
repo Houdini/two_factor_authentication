@@ -27,4 +27,5 @@ end
 group :test do
   gem 'rack_session_access'
   gem 'ammeter'
+  gem 'pry'
 end

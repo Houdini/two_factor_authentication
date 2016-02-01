@@ -22,7 +22,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
     if expires_seconds && expires_seconds > 0
       cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
-          value: true,
+          value: "#{resource.class}-#{resource.id}",
           expires: expires_seconds.from_now
       }
     end

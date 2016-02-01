@@ -138,6 +138,44 @@ feature "User of two factor authentication" do
         expect(page).to have_content("You are signed in as Marissa")
         expect(page).to have_content("Enter your personal code")
       end
+
+      scenario 'TFA should be different for different users' do
+        visit user_two_factor_authentication_path
+        fill_in 'code', with: user.otp_code
+        click_button 'Submit'
+
+        tfa_cookie1 = get_tfa_cookie()
+
+        logout
+        reset_session!
+
+        user2 = create_user()
+        login_as(user2)
+        visit user_two_factor_authentication_path
+        fill_in 'code', with: user2.otp_code
+        click_button 'Submit'
+
+        tfa_cookie2 = get_tfa_cookie()
+
+        expect(tfa_cookie1).not_to eq tfa_cookie2
+      end
+
+      scenario 'TFA should be unique for specific user' do
+        visit user_two_factor_authentication_path
+        fill_in 'code', with: user.otp_code
+        click_button 'Submit'
+
+        tfa_cookie1 = get_tfa_cookie()
+
+        logout
+        reset_session!
+
+        user2 = create_user()
+        set_tfa_cookie(tfa_cookie1)
+        login_as(user2)
+        visit dashboard_path
+        expect(page).to have_content('Enter your personal code')
+      end
     end
 
     it 'sets the warden session need_two_factor_authentication key to true' do
@@ -151,7 +189,11 @@ feature "User of two factor authentication" do
     let(:user) { create_user }
 
     scenario 'when UserOtpSender#reset_otp_state is defined' do
-      stub_const 'UserOtpSender', Class.new
+      klass = stub_const 'UserOtpSender', Class.new
+
+      klass.class_eval do
+        def reset_otp_state; end
+      end
 
       otp_sender = instance_double(UserOtpSender)
       expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
@@ -162,7 +204,11 @@ feature "User of two factor authentication" do
     end
 
     scenario 'when UserOtpSender#reset_otp_state is not defined' do
-      stub_const 'UserOtpSender', Class.new
+      klass = stub_const 'UserOtpSender', Class.new
+
+      klass.class_eval do
+        def reset_otp_state; end
+      end
 
       otp_sender = instance_double(UserOtpSender)
       allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
@@ -182,7 +228,11 @@ feature "User of two factor authentication" do
       visit new_user_session_path
       complete_sign_in_form_for(user)
 
-      stub_const 'UserOtpSender', Class.new
+      klass = stub_const 'UserOtpSender', Class.new
+      klass.class_eval do
+        def reset_otp_state; end
+      end
+
       otp_sender = instance_double(UserOtpSender)
 
       expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
@@ -195,7 +245,11 @@ feature "User of two factor authentication" do
       visit new_user_session_path
       complete_sign_in_form_for(user)
 
-      stub_const 'UserOtpSender', Class.new
+      klass = stub_const 'UserOtpSender', Class.new
+      klass.class_eval do
+        def reset_otp_state; end
+      end
+
       otp_sender = instance_double(UserOtpSender)
       allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
 
