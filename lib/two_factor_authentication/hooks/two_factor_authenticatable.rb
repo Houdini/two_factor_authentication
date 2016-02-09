@@ -22,11 +22,17 @@ end
 
 def reset_otp_state_for(user)
   klass_string = "#{user.class}OtpSender"
-  return unless Object.const_defined?(klass_string)
+  klass = class_from_string(klass_string)
 
-  klass = Object.const_get(klass_string)
+  return unless klass
 
   otp_sender = klass.new(user)
 
   otp_sender.reset_otp_state if otp_sender.respond_to?(:reset_otp_state)
+end
+
+def class_from_string(string)
+  string.constantize
+rescue NameError
+  false
 end
