@@ -15,6 +15,11 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     end
   end
 
+  def resend_code
+    resource.send_two_factor_authentication_code
+    redirect_to user_two_factor_authentication_path, notice: "Your authentication code has been sent."
+  end
+
   private
 
   def after_two_factor_success_for(resource)

@@ -7,4 +7,5 @@
   <%= submit_tag "Submit" %>
 <% end %>
 
+<%= link_to 'Resend Code', resend_code_user_two_factor_authentication_path, action: :get %>
 <%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
