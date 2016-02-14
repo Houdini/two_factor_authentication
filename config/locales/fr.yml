@@ -5,3 +5,4 @@ fr:
       attempt_failed: "La connexion a échoué."
       max_login_attempts_reached: "Limite de tentatives atteinte, accès refusé."
       contact_administrator: "Merci de contacter votre administrateur système."
+      code_has_been_sent: "Votre code de validation envoyé."
