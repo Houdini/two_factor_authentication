@@ -9,6 +9,10 @@ module AuthenticatedModelHelper
     User.create!(valid_attributes(attributes))
   end
 
+  def create_admin
+    Admin.create!(valid_attributes.except(:nickname))
+  end
+
   def valid_attributes(attributes={})
     {
       nickname: 'Marissa',

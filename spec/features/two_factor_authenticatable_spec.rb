@@ -187,29 +187,16 @@ feature "User of two factor authentication" do
 
   describe 'signing in' do
     let(:user) { create_user }
+    let(:admin) { create_admin }
 
     scenario 'when UserOtpSender#reset_otp_state is defined' do
-      klass = stub_const 'UserOtpSender', Class.new
-
-      klass.class_eval do
-        def reset_otp_state; end
-      end
-
-      otp_sender = instance_double(UserOtpSender)
-      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
-      expect(otp_sender).to receive(:reset_otp_state)
-
       visit new_user_session_path
       complete_sign_in_form_for(user)
+
+      expect(user.reload.email).to eq 'updated@example.com'
     end
 
     scenario 'when UserOtpSender#reset_otp_state is not defined' do
-      klass = stub_const 'UserOtpSender', Class.new
-
-      klass.class_eval do
-        def reset_otp_state; end
-      end
-
       otp_sender = instance_double(UserOtpSender)
       allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
 
@@ -218,45 +205,35 @@ feature "User of two factor authentication" do
 
       visit new_user_session_path
       complete_sign_in_form_for(user)
+    end
+
+    scenario 'when AdminOtpSender is not defined' do
+      visit new_admin_session_path
+      complete_sign_in_form_for(admin)
+
+      expect(page).to have_content('Signed in successfully.')
     end
   end
 
   describe 'signing out' do
     let(:user) { create_user }
+    let(:admin) { create_admin }
 
     scenario 'when UserOtpSender#reset_otp_state is defined' do
       visit new_user_session_path
       complete_sign_in_form_for(user)
-
-      klass = stub_const 'UserOtpSender', Class.new
-      klass.class_eval do
-        def reset_otp_state; end
-      end
-
-      otp_sender = instance_double(UserOtpSender)
-
-      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
-      expect(otp_sender).to receive(:reset_otp_state)
-
+      user.update_attributes(email: 'foo@example.com')
       visit destroy_user_session_path
+
+      expect(user.reload.email).to eq 'updated@example.com'
     end
 
-    scenario 'when UserOtpSender#reset_otp_state is not defined' do
-      visit new_user_session_path
-      complete_sign_in_form_for(user)
+    scenario 'when AdminOtpSender is not defined' do
+      visit new_admin_session_path
+      complete_sign_in_form_for(admin)
+      visit destroy_admin_session_path
 
-      klass = stub_const 'UserOtpSender', Class.new
-      klass.class_eval do
-        def reset_otp_state; end
-      end
-
-      otp_sender = instance_double(UserOtpSender)
-      allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
-
-      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
-      expect(otp_sender).to_not receive(:reset_otp_state)
-
-      visit destroy_user_session_path
+      expect(page).to have_content('Signed out successfully.')
     end
   end
 end
