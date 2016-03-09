@@ -1,8 +1,16 @@
 # Change Log
 
-## [Unreleased](https://github.com/houdini/two_factor_authentication/tree/HEAD)
+## [Unreleased](https://github.com/Houdini/two_factor_authentication/tree/HEAD)
 
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/v1.1.4...HEAD)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...HEAD)
+
+**Merged pull requests:**
+
+- Fix class detection in reset\_otp\_state\_for\(user\) [\#69](https://github.com/Houdini/two_factor_authentication/pull/69) ([monfresh](https://github.com/monfresh))
+- Add ability to resend code [\#52](https://github.com/Houdini/two_factor_authentication/pull/52) ([iDiogenes](https://github.com/iDiogenes))
+
+## [v1.1.5](https://github.com/Houdini/two_factor_authentication/tree/v1.1.5) (2016-02-01)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.4...v1.1.5)
 
 **Closed issues:**
 
@@ -10,12 +18,16 @@
 
 **Merged pull requests:**
 
+- added french translation [\#68](https://github.com/Houdini/two_factor_authentication/pull/68) ([qsypoq](https://github.com/qsypoq))
+- Drop support for Ruby 1.9.3 & update .travis.yml [\#67](https://github.com/Houdini/two_factor_authentication/pull/67) ([monfresh](https://github.com/monfresh))
+- Fix reset\_otp\_state specs [\#66](https://github.com/Houdini/two_factor_authentication/pull/66) ([monfresh](https://github.com/monfresh))
+- Add a CHANGELOG.md [\#65](https://github.com/Houdini/two_factor_authentication/pull/65) ([monfresh](https://github.com/monfresh))
 - Update bundler on Travis before installing gems [\#63](https://github.com/Houdini/two_factor_authentication/pull/63) ([monfresh](https://github.com/monfresh))
 - Add support for OTP secret key encryption [\#62](https://github.com/Houdini/two_factor_authentication/pull/62) ([monfresh](https://github.com/monfresh))
 - Allow executing code after sign in and before sign out [\#61](https://github.com/Houdini/two_factor_authentication/pull/61) ([monfresh](https://github.com/monfresh))
 
-## [v1.1.4](https://github.com/houdini/two_factor_authentication/tree/v1.1.4) (2016-01-01)
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/v1.1.3...v1.1.4)
+## [v1.1.4](https://github.com/Houdini/two_factor_authentication/tree/v1.1.4) (2016-01-01)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.3...v1.1.4)
 
 **Closed issues:**
 
@@ -31,8 +43,8 @@
 - Test against Ruby 2.2 and Rails 4.2 [\#53](https://github.com/Houdini/two_factor_authentication/pull/53) ([boffbowsh](https://github.com/boffbowsh))
 - Eliminates appended '?' to redirects that have no query string [\#46](https://github.com/Houdini/two_factor_authentication/pull/46) ([daveriess](https://github.com/daveriess))
 
-## [v1.1.3](https://github.com/houdini/two_factor_authentication/tree/v1.1.3) (2014-12-14)
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/list...v1.1.3)
+## [v1.1.3](https://github.com/Houdini/two_factor_authentication/tree/v1.1.3) (2014-12-14)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.2...v1.1.3)
 
 **Closed issues:**
 
@@ -45,11 +57,8 @@
 - Preserve query parameters in \_return\_to for redirect. [\#42](https://github.com/Houdini/two_factor_authentication/pull/42) ([omb-awong](https://github.com/omb-awong))
 - Add file extension to ActiveRecord generator [\#41](https://github.com/Houdini/two_factor_authentication/pull/41) ([jackturnbull](https://github.com/jackturnbull))
 
-## [list](https://github.com/houdini/two_factor_authentication/tree/list) (2014-07-14)
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/v1.1.2...list)
-
-## [v1.1.2](https://github.com/houdini/two_factor_authentication/tree/v1.1.2) (2014-07-14)
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/v1.1.1...v1.1.2)
+## [v1.1.2](https://github.com/Houdini/two_factor_authentication/tree/v1.1.2) (2014-07-14)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.1...v1.1.2)
 
 **Closed issues:**
 
@@ -60,8 +69,8 @@
 - Updated readme with rake task to update existing users with OTP secret k... [\#39](https://github.com/Houdini/two_factor_authentication/pull/39) ([Znow](https://github.com/Znow))
 - Updated readme with view overriding [\#38](https://github.com/Houdini/two_factor_authentication/pull/38) ([Znow](https://github.com/Znow))
 
-## [v1.1.1](https://github.com/houdini/two_factor_authentication/tree/v1.1.1) (2014-05-31)
-[Full Changelog](https://github.com/houdini/two_factor_authentication/compare/v1.1...v1.1.1)
+## [v1.1.1](https://github.com/Houdini/two_factor_authentication/tree/v1.1.1) (2014-05-31)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1...v1.1.1)
 
 **Closed issues:**
 
@@ -74,7 +83,7 @@
 - Chore/extract reused hash key [\#34](https://github.com/Houdini/two_factor_authentication/pull/34) ([rud](https://github.com/rud))
 - Pad OTP codes with less than 6 digits [\#31](https://github.com/Houdini/two_factor_authentication/pull/31) ([brissmyr](https://github.com/brissmyr))
 
-## [v1.1](https://github.com/houdini/two_factor_authentication/tree/v1.1) (2014-04-16)
+## [v1.1](https://github.com/Houdini/two_factor_authentication/tree/v1.1) (2014-04-16)
 **Closed issues:**
 
 - Update [\#15](https://github.com/Houdini/two_factor_authentication/issues/15)
@@ -104,6 +113,7 @@
 - Respond with 401 for request non-HTML requests [\#7](https://github.com/Houdini/two_factor_authentication/pull/7) ([WojtekKruszewski](https://github.com/WojtekKruszewski))
 - need\_two\_factor\_authentication? method should accept request param. [\#4](https://github.com/Houdini/two_factor_authentication/pull/4) ([VladimirMikhailov](https://github.com/VladimirMikhailov))
 - Add generators to make it easier to install and fix deprecation warnings [\#2](https://github.com/Houdini/two_factor_authentication/pull/2) ([carvil](https://github.com/carvil))
+
 
 
 \* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
