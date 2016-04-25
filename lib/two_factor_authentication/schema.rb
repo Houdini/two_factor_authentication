@@ -15,5 +15,13 @@ module TwoFactorAuthentication
     def encrypted_otp_secret_key_salt
       apply_devise_schema :encrypted_otp_secret_key_salt, String
     end
+
+    def direct_otp
+      apply_devise_schema :direct_otp, String
+    end
+
+    def direct_otp_sent_at
+      apply_devise_schema :direct_otp_sent_at, DateTime
+    end
   end
 end

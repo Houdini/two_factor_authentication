@@ -4,6 +4,8 @@ class TwoFactorAuthenticationAddTo<%= table_name.camelize %> < ActiveRecord::Mig
     add_column :<%= table_name %>, :encrypted_otp_secret_key, :string
     add_column :<%= table_name %>, :encrypted_otp_secret_key_iv, :string
     add_column :<%= table_name %>, :encrypted_otp_secret_key_salt, :string
+    add_column :<%= table_name %>, :direct_otp, :string
+    add_column :<%= table_name %>, :direct_otp_sent_at, :datetime
 
     add_index :<%= table_name %>, :encrypted_otp_secret_key, unique: true
   end

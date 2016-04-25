@@ -8,8 +8,8 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
     context 'after user enters valid OTP code' do
       it 'returns true' do
-        post :update, code: controller.current_user.otp_code
-
+        controller.current_user.send_new_otp
+        post :update, code: controller.current_user.direct_otp
         expect(subject.is_fully_authenticated?).to eq true
       end
     end

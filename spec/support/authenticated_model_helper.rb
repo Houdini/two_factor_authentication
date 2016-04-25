@@ -47,6 +47,8 @@ module AuthenticatedModelHelper
           t.integer  'second_factor_attempts_count', default: 0
           t.string   'nickname', limit: 64
           t.string   'otp_secret_key'
+          t.string   'direct_otp'
+          t.datetime 'direct_otp_sent_at'
         end
       end
     end

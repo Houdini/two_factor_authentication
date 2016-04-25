@@ -16,6 +16,12 @@ module Devise
   mattr_accessor :otp_length
   @@otp_length = 6
 
+  mattr_accessor :direct_otp_length
+  @@direct_otp_length = 6
+
+  mattr_accessor :direct_otp_valid_for
+  @@direct_otp_valid_for = 5.minutes
+
   mattr_accessor :remember_otp_session_for_seconds
   @@remember_otp_session_for_seconds = 0
 
