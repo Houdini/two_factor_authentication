@@ -10,10 +10,12 @@
 * Support for 2 types of OTP codes
  1. Codes delivered directly to the user
  2. TOTP (Google Authenticator) codes based on a shared secret (HMAC)
+ 3. A set of pre-shared backup codes
 * Configurable OTP code digit length
 * Configurable max login attempts
 * Customizable logic to determine if a user needs two factor authentication
 * Configurable period where users won't be asked for 2FA again
+* Backup codes hashed when stored in the database
 * Option to encrypt the TOTP secret in the database, with iv and salt
 
 ## Configuration
@@ -107,7 +109,7 @@ below):
 
 ```ruby
 def send_two_factor_authentication_code(code)
-  # Send code via SMS, etc.
+  # Send code directly to user via SMS, etc.
 end
 ```
 

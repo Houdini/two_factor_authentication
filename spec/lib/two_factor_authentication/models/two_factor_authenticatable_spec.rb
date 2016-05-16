@@ -28,7 +28,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
       expect(instance.direct_otp.length).to equal(6)
     end
 
-    it "honors 'direct_otp_length' in options paramater" do
+    it "honors 'length' in options paramater" do
       instance.create_direct_otp(length: 8)
       expect(instance.direct_otp.length).to equal(8)
       instance.create_direct_otp(length: 10)
@@ -36,14 +36,41 @@ describe Devise::Models::TwoFactorAuthenticatable do
     end
   end
 
+  describe '#create_backup_code' do
+    let(:instance) { build_guest_user }
+
+    it "honors .backup_code_count" do
+      expect(instance.class).to receive(:backup_code_count).and_return(2)
+      instance.create_backup_codes
+      expect(instance.backup_codes.split().length).to equal(2)
+    end
+
+    it "honors 'count' in options paramater" do
+      instance.create_backup_codes(count: 3)
+      expect(instance.backup_codes.split().length).to equal(3)
+    end
+
+    it "honors .backup_code_length" do
+      expect(instance.class).to receive(:backup_code_length).and_return(2)
+      expect(instance.class).to receive(:backup_code_count).and_return(1)
+      expect(instance.create_backup_codes[0].length).to equal(2)
+    end
+
+    it "honors 'length' in options paramater" do
+      expect(instance.class).to receive(:backup_code_count).and_return(1)
+      expect(instance.create_backup_codes(length: 2)[0].length).to equal(2)
+    end
+  end
+
   describe '#authenticate_direct_otp' do
     let(:instance) { build_guest_user }
+
     it 'fails if no direct_otp has been set' do
       expect(instance.authenticate_direct_otp('12345')).to eq(false)
     end
 
     context 'after generating an OTP' do
-      before :each do
+      before do
         instance.create_direct_otp
       end
 
@@ -69,9 +96,45 @@ describe Devise::Models::TwoFactorAuthenticatable do
     end
   end
 
+  describe '#authenticate_backup_code' do
+    let(:instance) { build_guest_user }
+    it 'fails if no backup codes have been set' do
+      expect(instance.authenticate_backup_code('12345')).to eq(false)
+    end
+
+    context 'after generating codes' do
+      before do
+        @codes = instance.create_backup_codes
+      end
+
+      it 'accept first code' do
+        expect(instance.authenticate_backup_code(@codes[0])).to eq(true)
+      end
+
+      it 'accept last code' do
+        expect(instance.authenticate_backup_code(@codes[-1])).to eq(true)
+      end
+
+      it 'accept all generated codes' do
+        @codes.each do |code|
+          expect(instance.authenticate_backup_code(code)).to eq(true)
+        end
+      end
+
+      it 'rejects invalid OTP' do
+        expect(instance.authenticate_backup_code('12340')).to eq(false)
+      end
+
+      it 'prevents code re-use' do
+        expect(instance.authenticate_backup_code(@codes[0])).to eq(true)
+        expect(instance.authenticate_backup_code(@codes[0])).to eq(false)
+      end
+    end
+  end
+
   describe '#authenticate_totp' do
     shared_examples 'authenticate_totp' do |instance|
-      before :each do
+      before do
         instance.otp_secret_key = '2z6hxkdwi3uvrnpn'
         instance.totp_timestamp = nil
         @totp_helper = TotpHelper.new(instance.otp_secret_key, instance.class.otp_length)

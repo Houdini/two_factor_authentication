@@ -1,0 +1,12 @@
+<h2>Enter one of your backup codes</h2>
+
+<p><%= flash[:notice] %></p>
+
+<%= form_tag([resource_name, :two_factor_authentication], :method => :put) do %>
+  <%= text_field_tag :backup_code %>
+  <%= submit_tag "Submit" %>
+<% end %>
+
+<%= link_to "Use Direct Code Delivery", user_two_factor_authentication_path, action: :get %>
+<%= link_to "Use App", use_totp_code_user_two_factor_authentication_path, action: :get %>
+<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>

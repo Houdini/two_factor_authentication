@@ -27,5 +27,9 @@ module TwoFactorAuthentication
     def totp_timestamp
       apply_devise_schema :totp_timestamp, Timestamp
     end
+
+    def backup_codes
+      apply_devise_schema :backup_codes, String
+    end
   end
 end
