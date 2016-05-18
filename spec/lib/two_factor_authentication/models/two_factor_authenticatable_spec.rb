@@ -114,7 +114,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
         expect(uri.scheme).to eq('otpauth')
         expect(uri.host).to eq('totp')
-        expect(uri.path).to eq('/houdini')
+        expect(uri.path).to eq('/Magic:houdini')
         expect(params['issuer'].shift).to eq('Magic')
         expect(params['secret'].shift).to match(/\w{16}/)
       end

@@ -84,7 +84,7 @@ feature "User of two factor authentication" do
         fill_in "code", with: "incorrect#{rand(100)}"
         click_button "Submit"
 
-        within(".flash.error") do
+        within(".flash.alert") do
           expect(page).to have_content("Attempt failed")
         end
       end

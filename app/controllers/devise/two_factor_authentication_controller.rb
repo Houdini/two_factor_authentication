@@ -52,7 +52,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   def after_two_factor_fail_for(resource)
     resource.second_factor_attempts_count += 1
     resource.save
-    flash.now[:error] = find_message(:attempt_failed)
+    set_flash_message :alert, find_message(:attempt_failed), now: true
 
     if resource.max_login_attempts?
       sign_out(resource)
