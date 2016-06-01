@@ -8,17 +8,17 @@ env:
   - "RAILS_VERSION=master"
 
 rvm:
-  - 2.0
   - 2.1
-  - 2.2.2
+  - 2.2
+  - 2.3.1
 
 matrix:
   allow_failures:
     - env: "RAILS_VERSION=master"
   exclude:
-    - rvm: 2.0
-      env: RAILS_VERSION=master
     - rvm: 2.1
+      env: RAILS_VERSION=master
+    - rvm: 2.2
       env: RAILS_VERSION=master
 
 before_install:
