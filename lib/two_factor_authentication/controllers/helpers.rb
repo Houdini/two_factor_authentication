@@ -4,11 +4,7 @@ module TwoFactorAuthentication
       extend ActiveSupport::Concern
 
       included do
-        if Rails::VERSION::MAJOR >= 4
-          before_action :handle_two_factor_authentication
-        else
-          before_filter :handle_two_factor_authentication
-        end
+        before_action :handle_two_factor_authentication
       end
 
       private
