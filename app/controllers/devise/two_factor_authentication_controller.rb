@@ -1,11 +1,6 @@
 class Devise::TwoFactorAuthenticationController < DeviseController
-  if Rails::VERSION::MAJOR >= 4
-    prepend_before_action :authenticate_scope!
-    before_action :prepare_and_validate, :handle_two_factor_authentication
-  else
-    prepend_before_filter :authenticate_scope!
-    before_filter :prepare_and_validate, :handle_two_factor_authentication
-  end
+  prepend_before_action :authenticate_scope!
+  before_action :prepare_and_validate, :handle_two_factor_authentication
 
   def show
   end
