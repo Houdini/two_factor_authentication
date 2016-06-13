@@ -33,19 +33,20 @@ module Devise
         end
 
         def authenticate_totp(code, options = {})
-          raise "authenticate_totp called with no otp_secret_key set" if otp_secret_key.nil?
-          totp = ROTP::TOTP.new(
-            otp_secret_key, digits: options[:otp_length] || self.class.otp_length
-          )
+          totp_secret = options[:otp_secret_key] || otp_secret_key
+          digits = options[:otp_length] || self.class.otp_length
           drift = options[:drift] || self.class.allowed_otp_drift_seconds
-
+          raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
+          totp = ROTP::TOTP.new(totp_secret, digits: digits)
           totp.verify_with_drift(code, drift)
         end
 
         def provisioning_uri(account = nil, options = {})
-          raise "provisioning_uri called with no otp_secret_key set" if otp_secret_key.nil?
+          totp_secret = options[:otp_secret_key] || otp_secret_key
+          options[:digits] ||= options[:otp_length] || self.class.otp_length
+          raise "provisioning_uri called with no otp_secret_key set" if totp_secret.nil?
           account ||= email if respond_to?(:email)
-          ROTP::TOTP.new(otp_secret_key, options).provisioning_uri(account)
+          ROTP::TOTP.new(totp_secret, options).provisioning_uri(account)
         end
 
         def need_two_factor_authentication?(request)
@@ -73,8 +74,14 @@ module Devise
           respond_to?(:otp_secret_key) && !otp_secret_key.nil?
         end
 
+        def confirm_totp_secret(secret, code, options = {})
+          return false unless authenticate_totp(code, {otp_secret_key: secret})
+          self.otp_secret_key = secret
+          true
+        end
+
         def generate_totp_secret
-          self.otp_secret_key = ROTP::Base32.random_base32
+          ROTP::Base32.random_base32
         end
 
         def create_direct_otp(options = {})

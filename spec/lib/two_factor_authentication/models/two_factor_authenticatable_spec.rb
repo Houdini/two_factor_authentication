@@ -122,7 +122,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
       describe 'with secret set' do
         before do
           instance.email = 'houdini@example.com'
-          instance.generate_totp_secret
+          instance.otp_secret_key = instance.generate_totp_secret
         end
 
         it "returns uri with user's email" do
@@ -157,18 +157,46 @@ describe Devise::Models::TwoFactorAuthenticatable do
     shared_examples 'generate_totp_secret' do |klass|
       let(:instance) { klass.new }
 
-      it 'populates otp_secret_key column' do
-        original_key = instance.otp_secret_key
+      it 'returns a 16 character string' do
+        secret = instance.generate_totp_secret
 
-        instance.generate_totp_secret
-
-        expect(instance.otp_secret_key).to match(/\w{16}/)
-        expect(instance.otp_secret_key).to_not eq(original_key)
+        expect(secret).to match(/\w{16}/)
       end
     end
 
     it_behaves_like 'generate_totp_secret', GuestUser
     it_behaves_like 'generate_totp_secret', EncryptedUser
+  end
+
+  describe '#confirm_totp_secret' do
+    shared_examples 'confirm_totp_secret' do |klass|
+      let(:instance) { klass.new }
+      let(:secret) { instance.generate_totp_secret }
+      let(:totp_helper) { TotpHelper.new(secret, instance.class.otp_length) }
+
+      it 'populates otp_secret_key column when given correct code' do
+        instance.confirm_totp_secret(secret, totp_helper.totp_code)
+
+        expect(instance.otp_secret_key).to match(secret)
+      end
+
+      it 'does not populate otp_secret_key when when given incorrect code' do
+        instance.confirm_totp_secret(secret, '123')
+        expect(instance.otp_secret_key).to be_nil
+      end
+
+      it 'returns true when given correct code' do
+        expect(instance.confirm_totp_secret(secret, totp_helper.totp_code)).to be true
+      end
+
+      it 'returns false when given incorrect code' do
+        expect(instance.confirm_totp_secret(secret, '123')).to be false
+      end
+
+    end
+
+    it_behaves_like 'confirm_totp_secret', GuestUser
+    it_behaves_like 'confirm_totp_secret', EncryptedUser
   end
 
   describe '#max_login_attempts' do
