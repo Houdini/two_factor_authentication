@@ -5,6 +5,7 @@ feature "User of two factor authentication" do
   context 'sending two factor authentication code via SMS' do
     shared_examples 'sends and authenticates code' do |user, type|
       before do
+        user.reload
         if type == 'encrypted'
           allow(User).to receive(:has_one_time_password).with(encrypted: true)
         end
@@ -18,12 +19,12 @@ feature "User of two factor authentication" do
         visit new_user_session_path
         complete_sign_in_form_for(user)
 
-        expect(page).to have_content 'Enter your personal code'
+        expect(page).to have_content 'Enter the code that was sent to you'
 
         expect(SMSProvider.messages.size).to eq(1)
         message = SMSProvider.last_message
         expect(message.to).to eq(user.phone_number)
-        expect(message.body).to eq(user.otp_code)
+        expect(message.body).to eq(user.reload.direct_otp)
       end
 
       it 'authenticates a valid OTP code' do
@@ -32,7 +33,7 @@ feature "User of two factor authentication" do
 
         expect(page).to have_content('You are signed in as Marissa')
 
-        fill_in 'code', with: user.otp_code
+        fill_in 'code', with: SMSProvider.last_message.body
         click_button 'Submit'
 
         within('.flash.notice') do
@@ -66,7 +67,7 @@ feature "User of two factor authentication" do
 
       expect(page).to_not have_content("Your Personal Dashboard")
 
-      fill_in "code", with: user.otp_code
+      fill_in "code", with: SMSProvider.last_message.body
       click_button "Submit"
 
       expect(page).to have_content("Your Personal Dashboard")
@@ -113,9 +114,7 @@ feature "User of two factor authentication" do
       end
 
       scenario "doesn't require TFA code again within 30 days" do
-        visit user_two_factor_authentication_path
-        fill_in "code", with: user.otp_code
-        click_button "Submit"
+        sms_sign_in
 
         logout
 
@@ -126,9 +125,7 @@ feature "User of two factor authentication" do
       end
 
       scenario "requires TFA code again after 30 days" do
-        visit user_two_factor_authentication_path
-        fill_in "code", with: user.otp_code
-        click_button "Submit"
+        sms_sign_in
 
         logout
 
@@ -136,13 +133,11 @@ feature "User of two factor authentication" do
         login_as user
         visit dashboard_path
         expect(page).to have_content("You are signed in as Marissa")
-        expect(page).to have_content("Enter your personal code")
+        expect(page).to have_content("Enter the code that was sent to you")
       end
 
       scenario 'TFA should be different for different users' do
-        visit user_two_factor_authentication_path
-        fill_in 'code', with: user.otp_code
-        click_button 'Submit'
+        sms_sign_in
 
         tfa_cookie1 = get_tfa_cookie()
 
@@ -151,19 +146,22 @@ feature "User of two factor authentication" do
 
         user2 = create_user()
         login_as(user2)
-        visit user_two_factor_authentication_path
-        fill_in 'code', with: user2.otp_code
-        click_button 'Submit'
+        sms_sign_in
 
         tfa_cookie2 = get_tfa_cookie()
 
         expect(tfa_cookie1).not_to eq tfa_cookie2
       end
 
-      scenario 'TFA should be unique for specific user' do
+      def sms_sign_in
+        SMSProvider.messages.clear()
         visit user_two_factor_authentication_path
-        fill_in 'code', with: user.otp_code
+        fill_in 'code', with: SMSProvider.last_message.body
         click_button 'Submit'
+      end
+
+      scenario 'TFA should be unique for specific user' do
+        sms_sign_in
 
         tfa_cookie1 = get_tfa_cookie()
 
@@ -174,7 +172,7 @@ feature "User of two factor authentication" do
         set_tfa_cookie(tfa_cookie1)
         login_as(user2)
         visit dashboard_path
-        expect(page).to have_content('Enter your personal code')
+        expect(page).to have_content("Enter the code that was sent to you")
       end
     end
 

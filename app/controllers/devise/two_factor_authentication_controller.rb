@@ -16,7 +16,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   end
 
   def resend_code
-    resource.send_two_factor_authentication_code
+    resource.send_new_otp
     redirect_to user_two_factor_authentication_path, notice: I18n.t('devise.two_factor_authentication.code_has_been_sent')
   end
 
@@ -52,7 +52,6 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     if resource.max_login_attempts?
       sign_out(resource)
       render :max_login_attempts_reached
-
     else
       render :show
     end
