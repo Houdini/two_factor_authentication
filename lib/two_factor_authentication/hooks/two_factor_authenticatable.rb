@@ -1,11 +1,9 @@
 Warden::Manager.after_authentication do |user, auth, options|
   reset_otp_state_for(user)
 
-  expected_cookie_value = "#{user.class}-#{user.id}"
-  actual_cookie_value = auth.env["action_dispatch.cookies"].signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME]
-  if actual_cookie_value.nil?
-    bypass_by_cookie = false
-  else
+  if auth.env["action_dispatch.cookies"]
+    expected_cookie_value = "#{user.class}-#{user.id}"
+    actual_cookie_value = auth.env["action_dispatch.cookies"].signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME]
     bypass_by_cookie = actual_cookie_value == expected_cookie_value
   end
 
