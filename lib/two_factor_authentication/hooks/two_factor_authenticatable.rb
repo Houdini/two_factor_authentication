@@ -1,6 +1,4 @@
 Warden::Manager.after_authentication do |user, auth, options|
-  reset_otp_state_for(user)
-
   if auth.env["action_dispatch.cookies"]
     expected_cookie_value = "#{user.class}-#{user.id}"
     actual_cookie_value = auth.env["action_dispatch.cookies"].signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME]
@@ -12,25 +10,4 @@ Warden::Manager.after_authentication do |user, auth, options|
       user.send_new_otp unless user.totp_enabled?
     end
   end
-end
-
-Warden::Manager.before_logout do |user, _auth, _options|
-  reset_otp_state_for(user)
-end
-
-def reset_otp_state_for(user)
-  klass_string = "#{user.class}OtpSender"
-  klass = class_from_string(klass_string)
-
-  return unless klass
-
-  otp_sender = klass.new(user)
-
-  otp_sender.reset_otp_state if otp_sender.respond_to?(:reset_otp_state)
-end
-
-def class_from_string(string)
-  string.constantize
-rescue NameError
-  false
 end
