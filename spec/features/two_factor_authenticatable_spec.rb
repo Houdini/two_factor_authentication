@@ -187,25 +187,14 @@ feature "User of two factor authentication" do
     let(:user) { create_user }
     let(:admin) { create_admin }
 
-    scenario 'when UserOtpSender#reset_otp_state is defined' do
+    scenario 'user signs is' do
       visit new_user_session_path
       complete_sign_in_form_for(user)
 
-      expect(user.reload.email).to eq 'updated@example.com'
+      expect(page).to have_content('Signed in successfully.')
     end
 
-    scenario 'when UserOtpSender#reset_otp_state is not defined' do
-      otp_sender = instance_double(UserOtpSender)
-      allow(otp_sender).to receive(:respond_to?).with(:reset_otp_state).and_return(false)
-
-      expect(UserOtpSender).to receive(:new).with(user).and_return(otp_sender)
-      expect(otp_sender).to_not receive(:reset_otp_state)
-
-      visit new_user_session_path
-      complete_sign_in_form_for(user)
-    end
-
-    scenario 'when AdminOtpSender is not defined' do
+    scenario 'admin signs in' do
       visit new_admin_session_path
       complete_sign_in_form_for(admin)
 
@@ -217,16 +206,15 @@ feature "User of two factor authentication" do
     let(:user) { create_user }
     let(:admin) { create_admin }
 
-    scenario 'when UserOtpSender#reset_otp_state is defined' do
+    scenario 'user signs out' do
       visit new_user_session_path
       complete_sign_in_form_for(user)
-      user.update_attributes(email: 'foo@example.com')
       visit destroy_user_session_path
 
-      expect(user.reload.email).to eq 'updated@example.com'
+      expect(page).to have_content('Signed out successfully.')
     end
 
-    scenario 'when AdminOtpSender is not defined' do
+    scenario 'admin signs out' do
       visit new_admin_session_path
       complete_sign_in_form_for(admin)
       visit destroy_admin_session_path
