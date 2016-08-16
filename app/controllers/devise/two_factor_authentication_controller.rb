@@ -17,7 +17,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def resend_code
     resource.send_new_otp
-    redirect_to user_two_factor_authentication_path, notice: I18n.t('devise.two_factor_authentication.code_has_been_sent')
+    redirect_to send("#{resource_name}_two_factor_authentication_path"), notice: I18n.t('devise.two_factor_authentication.code_has_been_sent')
   end
 
   private
