@@ -97,12 +97,12 @@ The `otp_secret_encryption_key` must be a random key that is not stored in the
 DB, and is not checked in to your repo. It is recommended to store it in an
 environment variable, and you can generate it with `bundle exec rake secret`.
 
-Override the method in your model in order to send direct OTP codes. This is
+Override this method in your model in order to send direct OTP codes. This is
 automatically called when a user logs in unless they have TOTP enabled (see
 below):
 
 ```ruby
-def send_two_factor_authentication_code(code)
+def send_two_factor_authentication_code(code, options)
   # Send code via SMS, etc.
 end
 ```

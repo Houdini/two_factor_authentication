@@ -112,6 +112,64 @@ describe Devise::Models::TwoFactorAuthenticatable do
     end
   end
 
+  describe '#send_new_otp' do
+    let(:instance) { TempGuestUser.new }
+
+    context 'when :send_two_factor_authentication_code accepts options' do
+      before do
+        class TempGuestUser < GuestUser
+          def send_two_factor_authentication_code(code, opts); end
+        end
+      end
+
+      it 'messages options to :send_two_factor_authentication_code' do
+        instance.update_attributes(direct_otp: '999999' )
+        allow(instance).to receive(:create_direct_otp).and_return(nil)
+
+        expect(instance).to receive(:send_two_factor_authentication_code).with(
+          '999999', { merp: :foo })
+
+        instance.send_new_otp({ merp: :foo })
+      end
+    end
+
+    context 'when :send_two_factor_authentication_code only accepts code' do
+      before do
+        class TempGuestUser < GuestUser
+          def send_two_factor_authentication_code(code); end
+        end
+      end
+
+      it 'messages only code to :send_two_factor_authentication_code' do
+        instance.update_attributes(direct_otp: '888888' )
+        allow(instance).to receive(:create_direct_otp).and_return(nil)
+
+        expect(instance).to receive(:send_two_factor_authentication_code).with(
+          '888888')
+
+        instance.send_new_otp({ derp: :moo })
+      end
+    end
+
+    context 'when :send_two_factor_authentication_code accepts any args' do
+      before do
+        class TempGuestUser < GuestUser
+          def send_two_factor_authentication_code(*args); end
+        end
+      end
+
+      it 'messages options to :send_two_factor_authentication_code' do
+        instance.update_attributes(direct_otp: '999999' )
+        allow(instance).to receive(:create_direct_otp).and_return(nil)
+
+        expect(instance).to receive(:send_two_factor_authentication_code).with(
+          '999999', { herp: :aderp })
+
+        instance.send_new_otp({ herp: :aderp })
+      end
+    end
+  end
+
   describe '#provisioning_uri' do
 
     shared_examples 'provisioning_uri' do |instance|
