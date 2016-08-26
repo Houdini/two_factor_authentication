@@ -33,6 +33,7 @@ Note that Ruby 2.1 or greater is required.
 ### Installation
 
 #### Automatic initial setup
+
 To set up the model and database migration file automatically, run the
 following command:
 
@@ -48,8 +49,10 @@ migration in `db/migrate/`, which will add the following columns to your table:
 - `:encrypted_otp_secret_key_salt`
 - `:direct_otp`
 - `:direct_otp_sent_at`
+- `:totp_timestamp`
 
 #### Manual initial setup
+
 If you prefer to set up the model and migration manually, add the
 `:two_factor_authentication` option to your existing devise options, such as:
 
@@ -61,7 +64,7 @@ devise :database_authenticatable, :registerable, :recoverable, :rememberable,
 Then create your migration file using the Rails generator, such as:
 
 ```
-rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime
+rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
 ```
 
 Open your migration file (it will be in the `db/migrate` directory and will be
@@ -74,6 +77,7 @@ add_index :users, :encrypted_otp_secret_key, unique: true
 Save the file.
 
 #### Complete the setup
+
 Run the migration with:
 
     bundle exec rake db:migrate
@@ -129,7 +133,7 @@ method on your model:
 user.generate_totp_secret
 ```
 
-This can then be shared via a provisioning uri:
+This must then be shared via a provisioning uri:
 
 ```ruby
 user.provisioning_uri # This assumes a user model with an email attribute

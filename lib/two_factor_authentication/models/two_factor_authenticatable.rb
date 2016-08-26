@@ -16,7 +16,7 @@ module Devise
         ::Devise::Models.config(
           self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length,
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
-          :direct_otp_length, :direct_otp_valid_for)
+          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp)
       end
 
       module InstanceMethodsOnActivation
@@ -38,7 +38,10 @@ module Devise
           drift = options[:drift] || self.class.allowed_otp_drift_seconds
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
-          totp.verify_with_drift(code, drift)
+          new_timestamp = totp.verify_with_drift_and_prior(code, drift, totp_timestamp)
+          return false unless new_timestamp
+          self.totp_timestamp = new_timestamp
+          true
         end
 
         def provisioning_uri(account = nil, options = {})

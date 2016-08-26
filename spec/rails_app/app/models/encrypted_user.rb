@@ -8,7 +8,8 @@ class EncryptedUser
                 :encrypted_otp_secret_key_iv,
                 :encrypted_otp_secret_key_salt,
                 :email,
-                :second_factor_attempts_count
+                :second_factor_attempts_count,
+                :totp_timestamp
 
   has_one_time_password(encrypted: true)
 end
