@@ -70,10 +70,10 @@ describe Devise::Models::TwoFactorAuthenticatable do
   end
 
   describe '#authenticate_totp' do
-
     shared_examples 'authenticate_totp' do |instance|
       before :each do
         instance.otp_secret_key = '2z6hxkdwi3uvrnpn'
+        instance.totp_timestamp = nil
         @totp_helper = TotpHelper.new(instance.otp_secret_key, instance.class.otp_length)
       end
 
@@ -88,6 +88,12 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
       it 'does not authenticate an old code' do
         code = @totp_helper.totp_code(1.minutes.ago.to_i)
+        expect(do_invoke(code, instance)).to eq(false)
+      end
+
+      it 'prevents code reuse' do
+        code = @totp_helper.totp_code
+        expect(do_invoke(code, instance)).to eq(true)
         expect(do_invoke(code, instance)).to eq(false)
       end
     end
