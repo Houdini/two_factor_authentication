@@ -16,13 +16,29 @@ module Devise
         ::Devise::Models.config(
           self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length,
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
-          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp)
+          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp,
+          :backup_code_count, :backup_code_length)
       end
 
       module InstanceMethodsOnActivation
         def authenticate_otp(code, options = {})
           return true if direct_otp && authenticate_direct_otp(code)
           return true if totp_enabled? && authenticate_totp(code, options)
+          false
+        end
+
+        def authenticate_backup_code(code, options = {})
+          return false if backup_codes.blank?
+          hashed_codes = backup_codes.split
+          hashed_codes.each do |backup_code|
+            if Devise::Encryptor.compare(self.class, backup_code, code)
+              # Remove this backup code so it cannot be used again
+              hashed_codes.delete(backup_code)
+              update_attributes(backup_codes: hashed_codes.join(" "))
+              return true
+            end
+          end
+
           false
         end
 
@@ -85,6 +101,19 @@ module Devise
 
         def generate_totp_secret
           ROTP::Base32.random_base32
+        end
+
+        def create_backup_codes(options = {})
+          count = options[:count] || self.class.backup_code_count || 10
+          digits = options[:length] || self.class.backup_code_length || 8
+          backup_codes = (1..count).map do
+            random_base10(digits)
+          end
+          hashed_codes = backup_codes.map do |code|
+            Devise::Encryptor.digest(self.class, code)
+          end.join(" ")
+          update_attributes(backup_codes: hashed_codes)
+          backup_codes
         end
 
         def create_direct_otp(options = {})

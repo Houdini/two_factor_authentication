@@ -27,6 +27,12 @@ module Devise
 
   mattr_accessor :otp_secret_encryption_key
   @@otp_secret_encryption_key = ''
+
+  mattr_accessor :backup_code_length
+  @@backup_code_length = 8
+
+  mattr_accessor :backup_code_count
+  @@backup_code_count = 10
 end
 
 module TwoFactorAuthentication

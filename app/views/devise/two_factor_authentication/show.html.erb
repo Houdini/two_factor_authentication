@@ -13,7 +13,9 @@
 
 <% if current_user.direct_otp %>
 <%= link_to "Resend Code", resend_code_user_two_factor_authentication_path, action: :get %>
+<%= link_to "Use App", use_totp_code_user_two_factor_authentication_path, action: :get %>
 <% else %>
 <%= link_to "Send me a code instead", resend_code_user_two_factor_authentication_path, action: :get %>
 <% end %>
+<%= link_to "Use Backup Code", use_backup_code_user_two_factor_authentication_path, action: :get %>
 <%= link_to "Sign out", destroy_user_session_path, :method => :delete %>

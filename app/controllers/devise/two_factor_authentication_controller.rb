@@ -2,16 +2,50 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   prepend_before_action :authenticate_scope!
   before_action :prepare_and_validate, :handle_two_factor_authentication
 
+  OTP_CODE = 1
+  TOTP_CODE = 2
+  BACKUP_CODE = 3
+
   def show
   end
 
-  def update
-    render :show and return if params[:code].nil?
+  def show_backup
+  end
 
-    if resource.authenticate_otp(params[:code])
+  def show_totp
+  end
+
+  def use_backup_code
+    render :show_backup
+  end
+
+  def use_totp_code
+    render :show_totp
+  end
+
+  def update
+    type = if !params[:code].nil?
+             OTP_CODE
+           elsif !params[:totp_code].nil?
+             TOTP_CODE
+           elsif !params[:backup_code].nil?
+             BACKUP_CODE
+           else
+             render :show and return
+           end
+
+    auth_status = if type == BACKUP_CODE
+                    resource.authenticate_backup_code(params[:backup_code])
+                  elsif type == OTP_CODE
+                    resource.authenticate_otp(params[:code])
+                  elsif type == TOTP_CODE
+                    resource.authenticate_totp(params[:totp_code])
+                  end
+
+    if auth_status
       after_two_factor_success_for(resource)
     else
-      after_two_factor_fail_for(resource)
+      after_two_factor_fail_for(resource, type)
     end
   end
 
@@ -44,7 +78,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     stored_location_for(resource_name) || :root
   end
 
-  def after_two_factor_fail_for(resource)
+  def after_two_factor_fail_for(resource, type)
     resource.second_factor_attempts_count += 1
     resource.save
     set_flash_message :alert, :attempt_failed, now: true
@@ -53,7 +87,16 @@ class Devise::TwoFactorAuthenticationController < DeviseController
       sign_out(resource)
       render :max_login_attempts_reached
     else
-      render :show
+      case type
+      when OTP_CODE
+        render :show
+      when BACKUP_CODE
+        render :show_backup
+      when TOTP_CODE
+        render :show_totp
+      else
+        raise "Invalid OTP type: #{type}"
+      end
     end
   end
 
