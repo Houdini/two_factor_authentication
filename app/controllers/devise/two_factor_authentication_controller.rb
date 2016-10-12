@@ -23,14 +23,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   private
 
   def after_two_factor_success_for(resource)
-    expires_seconds = resource.class.remember_otp_session_for_seconds
-
-    if expires_seconds && expires_seconds > 0
-      cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
-          value: "#{resource.class}-#{resource.id}",
-          expires: expires_seconds.from_now
-      }
-    end
+    set_remember_two_factor_cookie(resource)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
     bypass_sign_in(resource, scope: resource_name)
@@ -38,6 +31,17 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     resource.update_attribute(:second_factor_attempts_count, 0)
 
     redirect_to after_two_factor_success_path_for(resource)
+  end
+
+  def set_remember_two_factor_cookie(resource)
+    expires_seconds = resource.class.remember_otp_session_for_seconds
+
+    if expires_seconds && expires_seconds > 0
+      cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
+          value: "#{resource.class}-#{resource.public_send(Devise.second_factor_resource_id)}",
+          expires: expires_seconds.from_now
+      }
+    end
   end
 
   def after_two_factor_success_path_for(resource)

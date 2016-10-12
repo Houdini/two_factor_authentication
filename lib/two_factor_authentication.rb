@@ -27,6 +27,9 @@ module Devise
 
   mattr_accessor :otp_secret_encryption_key
   @@otp_secret_encryption_key = ''
+
+  mattr_accessor :second_factor_resource_id
+  @@second_factor_resource_id = 'id'
 end
 
 module TwoFactorAuthentication
