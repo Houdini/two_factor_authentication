@@ -20,7 +20,11 @@
 
 ### Initial Setup
 
-In a Rails environment, require the gem in your Gemfile:
+For Rails 5+ require the gem file and point the src to this github repo:
+
+    gem 'two_factor_authentication', github: "Houdini/two_factor_authentication"
+
+In other Rails environments, require the gem in your Gemfile:
 
     gem 'two_factor_authentication'
 
