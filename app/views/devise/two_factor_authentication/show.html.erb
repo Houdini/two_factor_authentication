@@ -1,4 +1,4 @@
-<% if current_user.direct_otp %>
+<% if resource.direct_otp %>
 <h2>Enter the code that was sent to you</h2>
 <% else %>
 <h2>Enter the code from your authenticator app</h2>
@@ -11,7 +11,7 @@
   <%= submit_tag "Submit" %>
 <% end %>
 
-<% if current_user.direct_otp %>
+<% if resource.direct_otp %>
 <%= link_to "Resend Code", resend_code_user_two_factor_authentication_path, action: :get %>
 <% else %>
 <%= link_to "Send me a code instead", resend_code_user_two_factor_authentication_path, action: :get %>
