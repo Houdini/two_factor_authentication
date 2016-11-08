@@ -26,7 +26,11 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     set_remember_two_factor_cookie(resource)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
-    bypass_sign_in(resource, scope: resource_name)
+    if respond_to?(:bypass_sign_in)
+      bypass_sign_in(resource, scope: resource_name)
+    else
+      sign_in(resource_name, resource, bypass: true)
+    end
     set_flash_message :notice, :success
     resource.update_attribute(:second_factor_attempts_count, 0)
 
