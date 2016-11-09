@@ -1,12 +1,29 @@
+require 'rqrcode'
+
 class Devise::TwoFactorAuthenticationController < DeviseController
   prepend_before_action :authenticate_scope!
   before_action :prepare_and_validate, :handle_two_factor_authentication
+  before_action :set_temp_secret, only: [:new, :create]
 
   def show
   end
 
+  def new
+  end
+
+  def create
+    return render :new if params[:code].nil? || params[:totp_secret].nil?
+
+    if resource.confirm_totp_secret(params[:totp_secret], params[:code])
+      after_two_factor_success_for(resource)
+    else
+      set_flash_message :notice, :confirm_failed, now: true
+      render :new
+    end
+  end
+
   def update
-    render :show and return if params[:code].nil?
+    return render :show if params[:code].nil?
 
     if resource.authenticate_otp(params[:code])
       after_two_factor_success_for(resource)
@@ -21,6 +38,20 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   end
 
   private
+
+  def set_temp_secret
+    @totp_secret = resource.generate_totp_secret
+    provisioning_uri = resource.provisioning_uri(nil, otp_secret_key: @totp_secret)
+    @qr = RQRCode::QRCode.new(provisioning_uri).as_png(
+      resize_gte_to: false,
+      resize_exactly_to: false,
+      fill: 'white',
+      color: 'black',
+      size: 250,
+      border_modules: 4,
+      module_px_size: 6,
+    ).to_data_url
+  end
 
   def after_two_factor_success_for(resource)
     set_remember_two_factor_cookie(resource)

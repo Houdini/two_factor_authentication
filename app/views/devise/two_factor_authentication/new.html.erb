@@ -1,0 +1,21 @@
+<div class='two-factor-authentication'>
+  <h2>Enable two-factor authentication</h2>
+
+  <p><%= flash[:notice] %></p>
+
+  <%= form_tag([resource_name, :two_factor_authentication]) do %>
+    <%= image_tag @qr %>
+
+    <%= text_field_tag :code, nil, placeholder: 'Enter code', autocomplete: 'off' %>
+
+    <%= hidden_field_tag :totp_secret, @totp_secret %>
+
+    <%= submit_tag 'Confirm and activate' %>
+  <% end %>
+
+  <br><br>
+  <%= link_to 'Send me a code instead', resend_code_user_two_factor_authentication_path %>
+  <br><br>
+  <%= link_to 'Skip', skip_user_two_factor_authentication_path%>
+  <br><br>
+</div>
