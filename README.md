@@ -15,7 +15,6 @@
 * Configurable max login attempts
 * Customizable logic to determine if a user needs two factor authentication
 * Configurable period where users won't be asked for 2FA again
-* Configurable issuer name for display in TOTP apps
 * Option to encrypt the TOTP secret in the database, with iv and salt
 
 ## Configuration
@@ -101,7 +100,6 @@ config.direct_otp_length = 6  # Direct OTP code length
 config.remember_otp_session_for_seconds = 30.days  # Time before browser has to perform 2fA again. Default is 0.
 config.otp_secret_encryption_key = ENV['OTP_SECRET_ENCRYPTION_KEY']
 config.second_factor_resource_id = 'id' # Field or method name used to set value for 2fA remember cookie
-config.issuer_name = 'App name' # The name shown in TOTP apps
 ```
 The `otp_secret_encryption_key` must be a random key that is not stored in the
 DB, and is not checked in to your repo. It is recommended to store it in an

@@ -30,9 +30,6 @@ module Devise
 
   mattr_accessor :second_factor_resource_id
   @@second_factor_resource_id = 'id'
-
-  mattr_accessor :issuer_name
-  @@issuer_name = ''
 end
 
 module TwoFactorAuthentication
