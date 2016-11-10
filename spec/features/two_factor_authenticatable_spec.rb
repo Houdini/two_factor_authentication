@@ -56,7 +56,7 @@ feature "User of two factor authentication" do
   end
 
   context "when logged in" do
-    let(:user) { create_user }
+    let(:user) { create_user('encrypted', otp_enabled: true) }
 
     background do
       login_as user
@@ -144,7 +144,7 @@ feature "User of two factor authentication" do
         logout
         reset_session!
 
-        user2 = create_user()
+        user2 = create_user('encrypted', otp_enabled: true)
         login_as(user2)
         sms_sign_in
 
@@ -168,7 +168,7 @@ feature "User of two factor authentication" do
         logout
         reset_session!
 
-        user2 = create_user()
+        user2 = create_user('encrypted', otp_enabled: true)
         set_tfa_cookie(tfa_cookie1)
         login_as(user2)
         visit dashboard_path

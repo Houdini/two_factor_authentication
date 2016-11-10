@@ -87,23 +87,28 @@ module Devise
 
         def confirm_totp_secret(secret, code, _options = {})
           return false unless authenticate_totp(code, otp_secret_key: secret)
-          update_attributes(
-            otp_secret_key: secret,
-            otp_enabled: true
-          )
+          # update_attributes(
+          #   otp_secret_key: secret,
+          #   otp_enabled: true
+          # )
+          self.otp_secret_key = secret
+          self.otp_enabled = true
         end
 
         def enable_otp
-          update_attributes(
-            otp_enabled: true
-          )
+          # update_attributes(
+          #   otp_enabled: true
+          # )
+          self.otp_enabled = true
         end
 
         def disable_otp
-          update_attributes(
-          otp_secret_key: nil,
-          otp_enabled: false
-          )
+          # update_attributes(
+          #   otp_secret_key: nil,
+          #   otp_enabled: false
+          # )
+          self.otp_secret_key = nil
+          self.otp_enabled = false
         end
 
         def generate_totp_secret
