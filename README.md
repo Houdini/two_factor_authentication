@@ -147,8 +147,12 @@ in either ERB or haml:
 - `show.html.erb`  Verifying OTP code after login
 
 inside `app/views/devise/two_factor_authentication/` and customizing it.
-Below is an example for show using ERB:
 
+Or you can use the generator:
+
+`bundle exec rails g two_factor_authentication:views`
+
+Below is an example for show using ERB:
 
 ```html
 <h2>Hi, you received a code by email, please enter it below, thanks!</h2>
