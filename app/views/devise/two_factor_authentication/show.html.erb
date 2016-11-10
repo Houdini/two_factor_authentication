@@ -6,7 +6,7 @@
 
 <p><%= flash[:notice] %></p>
 
-<%= form_tag([resource_name, :two_factor_authentication], :method => :put) do %>
+<%= form_tag(verify_user_two_factor_authentication_path, method: :put) do %>
   <%= text_field_tag :code %>
   <%= submit_tag "Submit" %>
 <% end %>
@@ -16,4 +16,5 @@
 <% else %>
 <%= link_to "Send me a code instead", resend_code_user_two_factor_authentication_path, action: :get %>
 <% end %>
+<br>
 <%= link_to "Sign out", destroy_user_session_path, :method => :delete %>

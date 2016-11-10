@@ -9,11 +9,16 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   end
 
   def new
+    if resource.totp_enabled?
+      return redirect_to({ action: :edit }, notice: I18n.t('devise.two_factor_authentication.totp_already_enabled'))
+    end
+  end
+
+  def edit
   end
 
   def create
     return render :new if params[:code].nil? || params[:totp_secret].nil?
-
     if resource.confirm_totp_secret(params[:totp_secret], params[:code])
       after_two_factor_success_for(resource)
     else
@@ -23,6 +28,16 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   end
 
   def update
+    return render :edit if params[:code].nil?
+    if resource.remove_totp(params[:code])
+      redirect_to after_two_factor_success_path_for(resource)
+    else
+      set_flash_message :notice, :remove_failed, now: true
+      render :edit
+    end
+  end
+
+  def verify
     return render :show if params[:code].nil?
 
     if resource.authenticate_otp(params[:code])
@@ -34,7 +49,11 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def resend_code
     resource.send_new_otp
-    redirect_to send("#{resource_name}_two_factor_authentication_path"), notice: I18n.t('devise.two_factor_authentication.code_has_been_sent')
+
+    respond_to do |format|
+      format.html { redirect_to send("#{resource_name}_two_factor_authentication_path"), notice: I18n.t('devise.two_factor_authentication.code_has_been_sent') }
+      format.json { head :no_content, status: :ok }
+    end
   end
 
   private
@@ -55,7 +74,6 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def after_two_factor_success_for(resource)
     set_remember_two_factor_cookie(resource)
-
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
     bypass_sign_in(resource, scope: resource_name)
     set_flash_message :notice, :success
