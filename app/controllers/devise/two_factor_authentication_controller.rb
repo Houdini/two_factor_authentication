@@ -3,7 +3,7 @@ require 'rqrcode'
 class Devise::TwoFactorAuthenticationController < DeviseController
   prepend_before_action :authenticate_scope!
   before_action :prepare_and_validate, :handle_two_factor_authentication
-  before_action :set_temp_secret, only: [:new, :create]
+  before_action :set_qr, only: [:new, :create]
 
   def show
   end
@@ -59,18 +59,10 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   private
 
-  def set_temp_secret
+  def set_qr
     @totp_secret = resource.generate_totp_secret
     provisioning_uri = resource.provisioning_uri(nil, otp_secret_key: @totp_secret)
-    @qr = RQRCode::QRCode.new(provisioning_uri).as_png(
-      resize_gte_to: false,
-      resize_exactly_to: false,
-      fill: 'white',
-      color: 'black',
-      size: 250,
-      border_modules: 4,
-      module_px_size: 6,
-    ).to_data_url
+    @qr = RQRCode::QRCode.new(provisioning_uri).as_png(size: 250).to_data_url
   end
 
   def after_two_factor_success_for(resource)
