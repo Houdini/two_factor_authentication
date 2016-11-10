@@ -6,6 +6,9 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   before_action :set_qr, only: [:new, :create]
 
   def show
+    unless resource.totp_enabled?
+      return redirect_to({ action: :new }, notice: I18n.t('devise.two_factor_authentication.totp_not_enabled'))
+    end
   end
 
   def new

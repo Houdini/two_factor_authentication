@@ -23,14 +23,15 @@
   <b>Can't scan this barcode?</b><br>
   Instead of scanning, use your authentication app's "Manual entry" or equivalent option and provide the following time-based key.<br>
   <br>
-  <b><i><%= @totp_secret %></i></b><br>
+  <b><i id='totp_secret'><%= @totp_secret %></i></b><br>
   <br>
   Your app will then generate a 6-digit verification code, which you use below.
 </p>
 
 <h3>Authentication via code</h3>
 
-<%= link_to 'Send me a code instead', resend_code_user_two_factor_authentication_path, remote: true %><br><br>
+<%= link_to 'Send me a code instead', resend_code_user_two_factor_authentication_path, remote: true %>
+<br><br>
 
 <%= form_tag([resource_name, :two_factor_authentication]) do %>
   <%= text_field_tag :code, nil, placeholder: 'Enter code', autocomplete: 'off' %>

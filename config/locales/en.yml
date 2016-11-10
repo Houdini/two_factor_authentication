@@ -8,4 +8,5 @@ en:
       max_login_attempts_reached: "Access completely denied as you have reached your attempts limit"
       contact_administrator: "Please contact your system administrator."
       code_has_been_sent: "Your authentication code has been sent."
-      totp_already_enabled: "Totp is already enabled. Redirected to edit."
+      totp_already_enabled: "Two factor authentication is already enabled."
+      totp_not_enabled: "Two factor authentication is not enabled. Activate first."
