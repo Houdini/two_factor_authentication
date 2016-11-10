@@ -79,14 +79,24 @@ module Devise
           respond_to?(:otp_secret_key) && !otp_secret_key.nil?
         end
 
-        def confirm_totp_secret(secret, code, _options = {})
-          return false unless authenticate_totp(code, otp_secret_key: secret)
-          update!(otp_secret_key: secret)
+        def confirm_otp(secret, code)
+          if direct_otp && authenticate_direct_otp(code)
+            return enable_otp
+          end
+          confirm_totp_secret(secret, code)
         end
 
-        def remove_totp(code, _options = {})
-          return false unless authenticate_totp(code)
-          update!(otp_secret_key: nil)
+        def confirm_totp_secret(secret, code, _options = {})
+          return false unless authenticate_totp(code, otp_secret_key: secret)
+          update!(otp_secret_key: secret, otp_enabled: true)
+        end
+
+        def enable_otp
+          update!(otp_enabled: true)
+        end
+
+        def disable_otp
+          update!(otp_secret_key: nil, otp_enabled: false)
         end
 
         def generate_totp_secret
