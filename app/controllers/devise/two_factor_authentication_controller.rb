@@ -19,7 +19,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def create
     return render :new if params[:code].nil? || params[:totp_secret].nil?
-    if resource.confirm_totp_secret(params[:totp_secret], params[:code])
+    if resource.confirm_otp(params[:totp_secret], params[:code])
       after_two_factor_success_for(resource)
     else
       set_flash_message :notice, :confirm_failed, now: true
@@ -29,7 +29,8 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def update
     return render :edit if params[:code].nil?
-    if resource.remove_totp(params[:code])
+    if resource.authenticate_otp(params[:code])
+      resource.disable_otp
       redirect_to after_two_factor_success_path_for(resource)
     else
       set_flash_message :notice, :remove_failed, now: true
