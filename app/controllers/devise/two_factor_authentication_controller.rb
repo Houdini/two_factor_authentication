@@ -1,3 +1,5 @@
+require 'devise/version'
+
 class Devise::TwoFactorAuthenticationController < DeviseController
   prepend_before_action :authenticate_scope!
   before_action :prepare_and_validate, :handle_two_factor_authentication
@@ -26,7 +28,9 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     set_remember_two_factor_cookie(resource)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
-    if respond_to?(:bypass_sign_in)
+    # For compatability with devise versions below v4.2.0
+    # https://github.com/plataformatec/devise/commit/2044fffa25d781fcbaf090e7728b48b65c854ccb
+    if Devise::VERSION.to_f >= 4.2
       bypass_sign_in(resource, scope: resource_name)
     else
       sign_in(resource_name, resource, bypass: true)
