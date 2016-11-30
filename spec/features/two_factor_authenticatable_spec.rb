@@ -18,7 +18,6 @@ feature "User of two factor authentication" do
       it 'sends code via SMS after sign in' do
         visit new_user_session_path
         complete_sign_in_form_for(user)
-
         expect(page).to have_content 'Enter the code that was sent to you'
 
         expect(SMSProvider.messages.size).to eq(1)
@@ -44,8 +43,8 @@ feature "User of two factor authentication" do
       end
     end
 
-    it_behaves_like 'sends and authenticates code', create_user('not_encrypted')
-    it_behaves_like 'sends and authenticates code', create_user, 'encrypted'
+    it_behaves_like 'sends and authenticates code', create_user('not_encrypted', otp_enabled: true)
+    it_behaves_like 'sends and authenticates code', create_user('encrypted', otp_enabled: true), 'encrypted'
   end
 
   scenario "must be logged in" do
