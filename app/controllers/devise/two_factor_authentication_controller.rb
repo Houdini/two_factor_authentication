@@ -1,4 +1,5 @@
 require 'rqrcode'
+require 'devise/version'
 
 class Devise::TwoFactorAuthenticationController < DeviseController
   prepend_before_action :authenticate_scope!
@@ -70,7 +71,13 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   def after_two_factor_success_for(resource)
     set_remember_two_factor_cookie(resource)
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
-    bypass_sign_in(resource, scope: resource_name)
+    # For compatability with devise versions below v4.2.0
+    # https://github.com/plataformatec/devise/commit/2044fffa25d781fcbaf090e7728b48b65c854ccb
+    if Devise::VERSION.to_f >= 4.2
+      bypass_sign_in(resource, scope: resource_name)
+    else
+      sign_in(resource_name, resource, bypass: true)
+    end
     set_flash_message :notice, :success
     resource.update_attribute(:second_factor_attempts_count, 0)
 
