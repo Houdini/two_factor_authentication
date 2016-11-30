@@ -100,6 +100,7 @@ module Devise
           #   otp_enabled: true
           # )
           self.otp_enabled = true
+          save
         end
 
         def disable_otp
@@ -109,6 +110,7 @@ module Devise
           # )
           self.otp_secret_key = nil
           self.otp_enabled = false
+          save
         end
 
         def generate_totp_secret
