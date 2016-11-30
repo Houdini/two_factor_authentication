@@ -6,13 +6,13 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   before_action :set_qr, only: [:new, :create]
 
   def show
-    unless resource.totp_enabled?
+    unless resource.otp_enabled
       return redirect_to({ action: :new }, notice: I18n.t('devise.two_factor_authentication.totp_not_enabled'))
     end
   end
 
   def new
-    if resource.totp_enabled?
+    if resource.otp_enabled
       return redirect_to({ action: :edit }, notice: I18n.t('devise.two_factor_authentication.totp_already_enabled'))
     end
   end
@@ -22,7 +22,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def create
     return render :new if params[:code].nil? || params[:totp_secret].nil?
-    if resource.confirm_otp(params[:totp_secret], params[:code])
+    if resource.confirm_otp(params[:totp_secret], params[:code]) && resource.save
       after_two_factor_success_for(resource)
     else
       set_flash_message :notice, :confirm_failed, now: true
@@ -32,9 +32,8 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   def update
     return render :edit if params[:code].nil?
-    if resource.authenticate_otp(params[:code])
-      resource.disable_otp
-      redirect_to after_two_factor_success_path_for(resource)
+    if resource.authenticate_otp(params[:code]) && resource.disable_otp
+      redirect_to after_two_factor_success_path_for(resource), notice: I18n.t('devise.two_factor_authentication.remove_success')
     else
       set_flash_message :notice, :remove_failed, now: true
       render :edit
