@@ -13,5 +13,5 @@ Warden::Manager.after_authentication do |user, auth, options|
 end
 
 Warden::Manager.before_logout do |user, auth, _options|
-  auth.cookies.delete TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME if user.class.delete_cookie_on_logout
+  auth.cookies.delete TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME if Devise.delete_cookie_on_logout
 end
