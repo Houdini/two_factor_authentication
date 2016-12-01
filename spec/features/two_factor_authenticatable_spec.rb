@@ -174,6 +174,18 @@ feature "User of two factor authentication" do
         visit dashboard_path
         expect(page).to have_content("Enter the code that was sent to you")
       end
+
+      scenario 'Delete cookie when user logs out if enabled' do
+        user.class.delete_cookie_on_logout = true
+
+        login_as user
+        logout
+
+        login_as user
+
+        visit dashboard_path
+        expect(page).to have_content("Enter the code that was sent to you")
+      end
     end
 
     it 'sets the warden session need_two_factor_authentication key to true' do
