@@ -5,7 +5,7 @@ class GuestUser
 
   define_model_callbacks :create
   attr_accessor :direct_otp, :direct_otp_sent_at, :otp_secret_key, :email,
-    :second_factor_attempts_count, :totp_timestamp
+    :second_factor_attempts_count, :totp_timestamp, :otp_enabled
 
   def update_attributes(attrs)
     attrs.each do |key, value|

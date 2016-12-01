@@ -26,6 +26,7 @@ describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :gene
       it { is_expected.to exist }
       it { is_expected.to be_a_migration }
       it { is_expected.to contain /def change/ }
+      it { is_expected.to contain /add_column :users, :otp_enabled, :boolean, default: false/ }
       it { is_expected.to contain /add_column :users, :second_factor_attempts_count, :integer, default: 0/ }
       it { is_expected.to contain /add_column :users, :encrypted_otp_secret_key, :string/ }
       it { is_expected.to contain /add_column :users, :encrypted_otp_secret_key_iv, :string/ }

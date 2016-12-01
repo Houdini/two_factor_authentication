@@ -1,0 +1,12 @@
+<h2>Disable two-factor authentication</h2>
+
+<p><%= flash[:notice] %></p>
+
+<%= form_tag([resource_name, :two_factor_authentication], method: 'PUT') do %>
+  <%= text_field_tag :code, nil, placeholder: 'Enter code', autocomplete: 'off' %>
+
+  <%= submit_tag 'Confirm and deactivate' %>
+<% end %>
+
+<br><br>
+<%= link_to 'Send me a code instead', resend_code_user_two_factor_authentication_path, remote: true %>
