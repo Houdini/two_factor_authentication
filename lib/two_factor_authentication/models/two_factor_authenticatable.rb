@@ -16,7 +16,8 @@ module Devise
         ::Devise::Models.config(
           self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length,
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
-          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp)
+          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp, :delete_cookie_on_logout
+        )
       end
 
       module InstanceMethodsOnActivation
