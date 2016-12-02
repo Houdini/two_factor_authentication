@@ -161,25 +161,31 @@ Below is an example using ERB:
 <% end %>
 
 <%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
-
 ```
 
-#### Enable TOTP support for existing users
+#### Upgrading from version 1.X to 2.X
 
-If you have existing users that need to be provided with a OTP secret key, so
-they can use TOTP, create a rake task. It could look like this one below:
+The following database fields are new in version 2.
+
+- `direct_otp`
+- `direct_otp_sent_at`
+- `totp_timestamp`
+
+To add them, generate a migration such as:
+
+    $ rails g migration AddTwoFactorFieldsToUsers direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
+
+The `otp_secret_key` is not only required for users who use Google Authentictor,
+so unless it has been shared with the user it should be set to `nil`.  The 
+following psudo-code is an example of how this might be done:
 
 ```ruby
-desc 'rake task to update users with otp secret key'
-task :update_users_with_otp_secret_key  => :environment do
-  User.find_each do |user|
-    user.generate_totp_secret
-    user.save!
-    puts "Rake[:update_users_with_otp_secret_key] => OTP secret key set to '#{key}' for User '#{user.email}'"
+User.find_each do |user| do
+  if !uses_authentictor_app(user)
+    user.otp_secret_key = nil
   end
 end
 ```
-Then run the task with `bundle exec rake update_users_with_otp_secret_key`
 
 #### Adding the TOTP encryption option to an existing app
 
