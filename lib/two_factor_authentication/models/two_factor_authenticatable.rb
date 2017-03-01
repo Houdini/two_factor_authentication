@@ -153,7 +153,8 @@ module Devise
             value: value,
             key: Devise.otp_secret_encryption_key,
             iv: iv_for_attribute,
-            salt: salt_for_attribute
+            salt: salt_for_attribute,
+            algorithm: 'aes-256-cbc'
           }
         end
 
