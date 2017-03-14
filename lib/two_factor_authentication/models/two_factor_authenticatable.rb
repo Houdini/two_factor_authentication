@@ -162,7 +162,7 @@ module Devise
           iv = encrypted_otp_secret_key_iv
 
           if iv.nil?
-            algo = OpenSSL::Cipher::Cipher.new(algorithm)
+            algo = OpenSSL::Cipher.new(algorithm)
             iv = [algo.random_iv].pack('m')
             self.encrypted_otp_secret_key_iv = iv
           end
