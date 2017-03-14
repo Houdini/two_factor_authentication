@@ -11,9 +11,10 @@
   <%= submit_tag "Submit" %>
 <% end %>
 
+<% resend_code_url = url_for(action: :resend_code) %>
 <% if resource.direct_otp %>
-<%= link_to "Resend Code", resend_code_user_two_factor_authentication_path, action: :get %>
+<%= link_to "Resend Code", resend_code_url, action: :get %>
 <% else %>
-<%= link_to "Send me a code instead", resend_code_user_two_factor_authentication_path, action: :get %>
+<%= link_to "Send me a code instead", resend_code_url, action: :get %>
 <% end %>
-<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+<%= link_to "Sign out", [:destroy, resource_name, :session], :method => :delete %>
