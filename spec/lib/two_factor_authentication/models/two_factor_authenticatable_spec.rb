@@ -289,7 +289,8 @@ describe Devise::Models::TwoFactorAuthenticatable do
           value: 'testing',
           key: Devise.otp_secret_encryption_key,
           iv: iv.unpack('m').first,
-          salt: salt.unpack('m').first
+          salt: salt.unpack('m').first,
+          algorithm: 'aes-256-cbc'
         )
 
         expect(instance.encrypted_otp_secret_key).to eq [encrypted].pack('m')
