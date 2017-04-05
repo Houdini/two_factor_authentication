@@ -50,6 +50,7 @@ module AuthenticatedModelHelper
           t.string    'direct_otp'
           t.datetime  'direct_otp_sent_at'
           t.timestamp 'totp_timestamp'
+          t.timestamp 'cookie_expire'
         end
       end
     end
