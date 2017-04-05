@@ -27,5 +27,9 @@ module TwoFactorAuthentication
     def totp_timestamp
       apply_devise_schema :totp_timestamp, Timestamp
     end
+
+    def cookie_expire
+      apply_devise_schema :cookie_expire, Timestamp
+    end
   end
 end
