@@ -280,16 +280,20 @@ describe Devise::Models::TwoFactorAuthenticatable do
           to raise_error ArgumentError
       end
 
-      it 'passes in the correct options to Encryptor' do
+      it 'passes in the correct options to Encryptor.
+          We test here output of
+          Devise::Models::TwoFactorAuthenticatable::EncryptionInstanceMethods.encryption_options_for' do
         instance.otp_secret_key = 'testing'
         iv = instance.encrypted_otp_secret_key_iv
         salt = instance.encrypted_otp_secret_key_salt
 
+        # it's important here to put the same crypto algorithm from that method
         encrypted = Encryptor.encrypt(
           value: 'testing',
           key: Devise.otp_secret_encryption_key,
           iv: iv.unpack('m').first,
-          salt: salt.unpack('m').first
+          salt: salt.unpack('m').first,
+          algorithm: 'aes-256-cbc'
         )
 
         expect(instance.encrypted_otp_secret_key).to eq [encrypted].pack('m')
