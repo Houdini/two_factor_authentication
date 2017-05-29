@@ -175,14 +175,15 @@ To add them, generate a migration such as:
 
     $ rails g migration AddTwoFactorFieldsToUsers direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
 
-The `otp_secret_key` is not only required for users who use Google Authentictor,
+The `otp_secret_key` is only required for users who use TOTP (Google Authenticator) codes,
 so unless it has been shared with the user it should be set to `nil`.  The
 following pseudo-code is an example of how this might be done:
 
 ```ruby
 User.find_each do |user| do
-  if !uses_authentictor_app(user)
+  if !uses_authenticator_app(user)
     user.otp_secret_key = nil
+    user.save!
   end
 end
 ```
