@@ -58,10 +58,15 @@ module Devise
 
         def send_new_otp(options = {})
           create_direct_otp options
-          send_two_factor_authentication_code(direct_otp)
+
+          if instance_accepts_opts?
+            send_two_factor_authentication_code(direct_otp, options)
+          else
+            send_two_factor_authentication_code(direct_otp)
+          end
         end
 
-        def send_two_factor_authentication_code(code)
+        def send_two_factor_authentication_code(*args)
           raise NotImplementedError.new("No default implementation - please define in your class.")
         end
 
@@ -108,6 +113,11 @@ module Devise
 
         def clear_direct_otp
           update_attributes(direct_otp: nil, direct_otp_sent_at: nil)
+        end
+
+        def instance_accepts_opts?
+          arity = self.class.instance_method(:send_two_factor_authentication_code).arity
+          arity.abs == 2 || arity == -1
         end
       end
 
