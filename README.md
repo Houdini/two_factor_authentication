@@ -1,4 +1,6 @@
 # Two factor authentication for Devise
+XXX
+YYY
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Houdini/two_factor_authentication?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
