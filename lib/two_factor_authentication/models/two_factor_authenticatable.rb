@@ -113,16 +113,16 @@ module Devise
 
       module EncryptionInstanceMethods
         def otp_secret_key
-          decrypt(encrypted_otp_secret_key)
+          otp_decrypt(encrypted_otp_secret_key)
         end
 
         def otp_secret_key=(value)
-          self.encrypted_otp_secret_key = encrypt(value)
+          self.encrypted_otp_secret_key = otp_encrypt(value)
         end
 
         private
 
-        def decrypt(encrypted_value)
+        def otp_decrypt(encrypted_value)
           return encrypted_value if encrypted_value.blank?
 
           encrypted_value = encrypted_value.unpack('m').first
@@ -137,7 +137,7 @@ module Devise
           value
         end
 
-        def encrypt(value)
+        def otp_encrypt(value)
           return value if value.blank?
 
           value = value.to_s
