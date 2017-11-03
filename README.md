@@ -242,7 +242,7 @@ steps:
         end
       end
     end
-  ```
+   ```
 
 5. Generate a migration to remove the `:otp_secret_key` column:
    ```
