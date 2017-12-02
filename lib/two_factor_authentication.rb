@@ -30,6 +30,9 @@ module Devise
 
   mattr_accessor :second_factor_resource_id
   @@second_factor_resource_id = 'id'
+
+  mattr_accessor :delete_cookie_on_logout
+  @@delete_cookie_on_logout = false
 end
 
 module TwoFactorAuthentication
