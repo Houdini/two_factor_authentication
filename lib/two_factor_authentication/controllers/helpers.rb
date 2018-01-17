@@ -4,7 +4,7 @@ module TwoFactorAuthentication
       extend ActiveSupport::Concern
 
       included do
-        before_action :handle_two_factor_authentication
+        Rails.version.to_i > 3 ? before_action(:handle_two_factor_authentication) : before_filter(:handle_two_factor_authentication)
       end
 
       private
