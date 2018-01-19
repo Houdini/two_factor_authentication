@@ -8,8 +8,8 @@
 ## Features
 
 * Support for 2 types of OTP codes
- 1. Codes delivered directly to the user
- 2. TOTP (Google Authenticator) codes based on a shared secret (HMAC)
+    1. Codes delivered directly to the user
+    2. TOTP (Google Authenticator) codes based on a shared secret (HMAC)
 * Configurable OTP code digit length
 * Configurable max login attempts
 * Customizable logic to determine if a user needs two factor authentication
