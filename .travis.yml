@@ -22,6 +22,6 @@ before_install:
   - gem update bundler
 
 before_script:
-  - bundle exec rake app:db:migrate
+  - bundle exec rake app:db:setup
 
 script: bundle exec rake spec
