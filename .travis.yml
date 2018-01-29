@@ -6,7 +6,6 @@ env:
   - "RAILS_VERSION=master"
 
 rvm:
-  - 2.2
   - 2.3.6
   - 2.4.3
   - 2.5.0
@@ -15,9 +14,9 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: "RAILS_VERSION=master"
-  exclude:
+  include:
     - rvm: 2.2
-      env: RAILS_VERSION=master
+      env: RAILS_VERSION=4.2
 
 before_install:
   - gem update bundler
