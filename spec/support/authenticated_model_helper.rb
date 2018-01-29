@@ -29,7 +29,7 @@ module AuthenticatedModelHelper
   end
 
   def create_table_for_nonencrypted_user
-    silence_stream(STDOUT) do
+    ActiveRecord::Migration.suppress_messages do
       ActiveRecord::Schema.define(version: 1) do
         create_table 'users', force: :cascade do |t|
           t.string    'email', default: '', null: false
