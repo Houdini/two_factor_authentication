@@ -48,6 +48,7 @@ module AuthenticatedModelHelper
           t.string    'nickname', limit: 64
           t.string    'otp_secret_key'
           t.string    'direct_otp'
+          t.boolean   'enable_2fa_paranoid_mode', default: false
           t.datetime  'direct_otp_sent_at'
           t.timestamp 'totp_timestamp'
         end

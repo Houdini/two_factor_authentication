@@ -25,6 +25,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   private
 
   def after_two_factor_success_for(resource)
+    
     set_remember_two_factor_cookie(resource)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
@@ -37,6 +38,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     end
     set_flash_message :notice, :success
     resource.update_attribute(:second_factor_attempts_count, 0)
+    resource.update_attribute(:enable_2fa_paranoid_mode, !params[:remember_me].present?) # We need this to skip adding attr_accessible for rails 3.x projects
 
     redirect_to after_two_factor_success_path_for(resource)
   end

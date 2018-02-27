@@ -5,6 +5,9 @@ Warden::Manager.after_authentication do |user, auth, options|
     bypass_by_cookie = actual_cookie_value == expected_cookie_value
   end
 
+  paranoid_mode = user.respond_to?(:enable_2fa_paranoid_mode) && user.enable_2fa_paranoid_mode
+  bypass_by_cookie = bypass_by_cookie && !paranoid_mode
+
   if user.respond_to?(:need_two_factor_authentication?) && !bypass_by_cookie
     if auth.session(options[:scope])[TwoFactorAuthentication::NEED_AUTHENTICATION] = user.need_two_factor_authentication?(auth.request)
       user.send_new_otp unless user.totp_enabled?

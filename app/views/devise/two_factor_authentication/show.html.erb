@@ -9,6 +9,11 @@
 <%= form_tag([resource_name, :two_factor_authentication], :method => :put) do %>
   <%= text_field_tag :code %>
   <%= submit_tag "Submit" %>
+
+  <%= label_tag class: 'form-control' do %>
+    Remember this computer
+    <%= check_box_tag :remember_me, '1', false %>
+  <% end %>
 <% end %>
 
 <% if resource.direct_otp %>
