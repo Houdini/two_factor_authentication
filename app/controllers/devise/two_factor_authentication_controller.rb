@@ -1,8 +1,8 @@
 require 'devise/version'
 
 class Devise::TwoFactorAuthenticationController < DeviseController
-  prepend_before_action :authenticate_scope!
-  before_action :prepare_and_validate, :handle_two_factor_authentication
+  Rails.version.to_i > 3 ? prepend_before_action(:authenticate_scope!) : prepend_before_filter(:authenticate_scope!)
+  Rails.version.to_i > 3 ? before_action(:prepare_and_validate, :handle_two_factor_authentication) : before_filter(:prepare_and_validate, :handle_two_factor_authentication)
 
   def show
   end
@@ -25,6 +25,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
   private
 
   def after_two_factor_success_for(resource)
+    
     set_remember_two_factor_cookie(resource)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
@@ -37,6 +38,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     end
     set_flash_message :notice, :success
     resource.update_attribute(:second_factor_attempts_count, 0)
+    resource.update_attribute(:enable_2fa_paranoid_mode, !params[:remember_me].present?) # We need this to skip adding attr_accessible for rails 3.x projects
 
     redirect_to after_two_factor_success_path_for(resource)
   end
