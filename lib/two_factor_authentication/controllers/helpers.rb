@@ -24,7 +24,7 @@ module TwoFactorAuthentication
           session["#{scope}_return_to"] = request.original_fullpath if request.get?
           redirect_to two_factor_authentication_path_for(scope)
         else
-          render nothing: true, status: :unauthorized
+          head :unauthorized
         end
       end
 
