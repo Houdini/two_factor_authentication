@@ -1,4 +1,4 @@
-class AddEncryptedColumnsToUser < ActiveRecord::Migration
+class AddEncryptedColumnsToUser < ActiveRecord::Migration[4.2]
   def change
     add_column :users, :encrypted_otp_secret_key, :string
     add_column :users, :encrypted_otp_secret_key_iv, :string
