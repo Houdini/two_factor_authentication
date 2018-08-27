@@ -1,3 +1,5 @@
+require "active_record"
+
 module TwoFactorAuthentication
   module Orm
     module ActiveRecord
