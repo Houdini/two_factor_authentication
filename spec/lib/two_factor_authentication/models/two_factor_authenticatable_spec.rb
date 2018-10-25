@@ -86,6 +86,11 @@ describe Devise::Models::TwoFactorAuthenticatable do
         expect(do_invoke(code, instance)).to eq(true)
       end
 
+      it 'authenticates a code entered with a space' do
+        code = @totp_helper.totp_code.insert(3, ' ')
+        expect(do_invoke(code, instance)).to eq(true)
+      end
+
       it 'does not authenticate an old code' do
         code = @totp_helper.totp_code(1.minutes.ago.to_i)
         expect(do_invoke(code, instance)).to eq(false)
