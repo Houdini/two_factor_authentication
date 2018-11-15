@@ -13,7 +13,8 @@ module TwoFactorAuthentication
         unless devise_controller?
           Devise.mappings.keys.flatten.any? do |scope|
             if signed_in?(scope) and warden.session(scope)[TwoFactorAuthentication::name_for(:need_authentication,
-                                                                                             scope)]
+                                                                                             scope)] and
+                public_send("current_#{scope}").class.subdomain_in_scope?
               handle_failed_second_factor(scope)
             end
           end
@@ -23,12 +24,6 @@ module TwoFactorAuthentication
       def handle_failed_second_factor(scope)
         if request.format.present? and request.format.html?
           session["#{scope}_return_to"] = request.original_fullpath if request.get?
-          begin
-            model = public_send("current_#{scope}").class
-            return if (scoped_to_subdomain && request.subdomain != model.scoped_to_subdomain) ||
-                (neglect_subdomain && request.subdomain == model.neglect_subdomain)
-          rescue => e
-          end
           redirect_to two_factor_authentication_path_for(scope)
         else
           head :unauthorized

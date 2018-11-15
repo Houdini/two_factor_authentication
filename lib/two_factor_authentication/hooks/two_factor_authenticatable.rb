@@ -10,7 +10,7 @@ Warden::Manager.after_authentication do |user, auth, options|
   if user.respond_to?(:need_two_factor_authentication?) && !bypass_by_cookie
     if auth.session(options[:scope])[TwoFactorAuthentication::name_for(
         :need_authentication, options[:scope]
-    )] = user.need_two_factor_authentication?(auth.request)
+    )] = user.need_two_factor_authentication?(auth.request) and user.class.subdomain_in_scope?
       user.send_new_otp if user.send_new_otp_after_login?
     end
   end

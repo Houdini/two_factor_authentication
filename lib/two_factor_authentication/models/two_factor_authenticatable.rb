@@ -101,6 +101,15 @@ module Devise
           )
         end
 
+        def subdomain_in_scope?
+          begin
+              false if (scoped_to_subdomain && request.subdomain != scoped_to_subdomain) ||
+              (neglect_subdomain && request.subdomain == neglect_subdomain)
+          rescue
+            true
+          end
+        end
+
         private
 
         def without_spaces(code)
