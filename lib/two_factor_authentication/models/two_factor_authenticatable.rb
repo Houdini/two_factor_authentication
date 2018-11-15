@@ -11,6 +11,7 @@ module Devise
         def has_one_time_password(options = {})
           include InstanceMethodsOnActivation
           include EncryptionInstanceMethods if options[:encrypted] == true
+          extend ClassMethodsOnActivation
         end
 
         ::Devise::Models.config(
@@ -18,6 +19,17 @@ module Devise
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
           :direct_otp_length, :direct_otp_valid_for, :totp_timestamp, :delete_cookie_on_logout
         )
+      end
+
+      module ClassMethodsOnActivation
+        def subdomain_in_scope?
+          begin
+            false if (scoped_to_subdomain && request.subdomain != scoped_to_subdomain) ||
+                (neglect_subdomain && request.subdomain == neglect_subdomain)
+          rescue
+            true
+          end
+        end
       end
 
       module InstanceMethodsOnActivation
@@ -99,15 +111,6 @@ module Devise
             direct_otp: random_base10(digits),
             direct_otp_sent_at: Time.now.utc
           )
-        end
-
-        def subdomain_in_scope?
-          begin
-              false if (scoped_to_subdomain && request.subdomain != scoped_to_subdomain) ||
-              (neglect_subdomain && request.subdomain == neglect_subdomain)
-          rescue
-            true
-          end
         end
 
         private
