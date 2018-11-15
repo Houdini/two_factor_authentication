@@ -14,7 +14,7 @@ module TwoFactorAuthentication
           Devise.mappings.keys.flatten.any? do |scope|
             if signed_in?(scope) and warden.session(scope)[TwoFactorAuthentication::name_for(:need_authentication,
                                                                                              scope)] and
-                public_send("current_#{scope}").class.subdomain_in_scope?
+                public_send("current_#{scope}").class.subdomain_in_scope?(request.subdomain)
               handle_failed_second_factor(scope)
             end
           end
