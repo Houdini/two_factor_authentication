@@ -24,8 +24,9 @@ module TwoFactorAuthentication
         if request.format.present? and request.format.html?
           session["#{scope}_return_to"] = request.original_fullpath if request.get?
           begin
-            scoped_to_subdomain = public_send("current_#{scope}")&.scoped_to_subdomain
-            return if scoped_to_subdomain && request.subdomain != scoped_to_subdomain
+            model = public_send("current_#{scope}").class
+            return if (scoped_to_subdomain && request.subdomain != model.scoped_to_subdomain) ||
+                (neglect_subdomain && request.subdomain == model.neglect_subdomain)
           rescue => e
           end
           redirect_to two_factor_authentication_path_for(scope)
