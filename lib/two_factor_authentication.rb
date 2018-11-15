@@ -38,6 +38,10 @@ module TwoFactorAuthentication
   NEED_AUTHENTICATION = 'need_two_factor_authentication'
   REMEMBER_TFA_COOKIE_NAME = "remember_tfa"
 
+  def self.name_for(sym, scope)
+    "#{self.const_get(sym.upcase.to_s)}_#{scope.to_s}"
+  end
+
   autoload :Schema, 'two_factor_authentication/schema'
   module Controllers
     autoload :Helpers, 'two_factor_authentication/controllers/helpers'

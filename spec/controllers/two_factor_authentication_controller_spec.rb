@@ -18,7 +18,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       it 'returns true' do
         controller.current_user.send_new_otp
         post_code controller.current_user.direct_otp
-        expect(subject.is_fully_authenticated?).to eq true
+        expect(subject.is_fully_authenticated?("user")).to eq true
       end
     end
 
@@ -26,7 +26,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       it 'returns false' do
         get :show
 
-        expect(subject.is_fully_authenticated?).to eq false
+        expect(subject.is_fully_authenticated?("user")).to eq false
       end
     end
 
@@ -34,7 +34,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       it 'returns false' do
         post_code '12345'
 
-        expect(subject.is_fully_authenticated?).to eq false
+        expect(subject.is_fully_authenticated?("user")).to eq false
       end
     end
   end
