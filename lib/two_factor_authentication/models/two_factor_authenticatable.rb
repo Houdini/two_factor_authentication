@@ -23,8 +23,8 @@ module Devise
 
       module ClassMethodsOnActivation
         def subdomain_in_scope?(subdomain)
-          (respond_to?(:scoped_to_subdomain) && subdomain == scoped_to_subdomain) ||
-              (respond_to?(:neglect_subdomain) && subdomain != neglect_subdomain)
+          return true unless respond_to? :two_factor_subdomains
+          !!(subdomain =~ two_factor_subdomains)
         end
       end
 

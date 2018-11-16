@@ -323,4 +323,31 @@ describe Devise::Models::TwoFactorAuthenticatable do
       end
     end
   end
+
+  describe 'self.subdomain_in_scope?' do
+    let(:user) { EncryptedUser.new }
+
+    it 'allows scope if no optional methods' do
+      expect(user.class.subdomain_in_scope?('test1'))
+    end
+
+    it 'correctly parses a regex (neglect example)' do
+      allow(user.class).to receive(:two_factor_subdomains).and_return /^(?!(bad)$).*$/
+
+      expect(user.class.subdomain_in_scope?('good')).to be(true)
+      expect(user.class.subdomain_in_scope?('another-one')).to be(true)
+      expect(user.class.subdomain_in_scope?('bad')).to be(false)
+      expect(user.class.subdomain_in_scope?('goodbadugly')).to be(true)
+      expect(user.class.subdomain_in_scope?('')).to be(true)
+    end
+
+    it 'correctly parses a regex (whitelist example)' do
+      allow(user.class).to receive(:two_factor_subdomains).and_return /^(good|ugly)$/
+
+      expect(user.class.subdomain_in_scope?('good')).to be(true)
+      expect(user.class.subdomain_in_scope?('ugly')).to be(true)
+      expect(user.class.subdomain_in_scope?('bad')).to be(false)
+      expect(user.class.subdomain_in_scope?('')).to be(false)
+    end
+  end
 end

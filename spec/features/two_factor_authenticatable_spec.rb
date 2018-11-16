@@ -189,7 +189,7 @@ feature "User of two factor authentication" do
     end
 
     it 'sets the warden session need_two_factor_authentication key to true' do
-      session_hash = { 'need_two_factor_authentication' => true }
+      session_hash = { 'need_two_factor_authentication_user' => true }
 
       expect(page.get_rack_session_key('warden.user.user.session')).to eq session_hash
     end

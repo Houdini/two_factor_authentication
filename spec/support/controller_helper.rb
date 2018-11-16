@@ -2,7 +2,7 @@ module ControllerHelper
   def sign_in(user = create_user('not_encrypted'))
     allow(warden).to receive(:authenticated?).with(:user).and_return(true)
     allow(controller).to receive(:current_user).and_return(user)
-    warden.session(:user)[TwoFactorAuthentication::NEED_AUTHENTICATION] = true
+    warden.session(:user)[TwoFactorAuthentication::name_for(:need_authentication, "user")] = true
   end
 end
 
