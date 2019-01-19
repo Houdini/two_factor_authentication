@@ -143,7 +143,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
         it 'returns uri with issuer option' do
           expect(instance.provisioning_uri('houdini')).
-            to match(%r{otpauth://totp/houdini\?secret=\w{16}$})
+            to match(%r{otpauth://totp/houdini\?secret=\w{32}$})
         end
 
         it 'returns uri with issuer option' do
