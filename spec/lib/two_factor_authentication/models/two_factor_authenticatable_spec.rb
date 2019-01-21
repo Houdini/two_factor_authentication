@@ -138,12 +138,12 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
         it "returns uri with user's email" do
           expect(instance.provisioning_uri).
-            to match(%r{otpauth://totp/houdini@example.com\?secret=\w{16}})
+            to match(%r{otpauth://totp/houdini@example.com\?secret=\w{32}})
         end
 
         it 'returns uri with issuer option' do
           expect(instance.provisioning_uri('houdini')).
-            to match(%r{otpauth://totp/houdini\?secret=\w{16}$})
+            to match(%r{otpauth://totp/houdini\?secret=\w{32}$})
         end
 
         it 'returns uri with issuer option' do
@@ -155,7 +155,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
           expect(uri.host).to eq('totp')
           expect(uri.path).to eq('/Magic:houdini')
           expect(params['issuer'].shift).to eq('Magic')
-          expect(params['secret'].shift).to match(/\w{16}/)
+          expect(params['secret'].shift).to match(/\w{32}/)
         end
       end
     end
@@ -168,10 +168,10 @@ describe Devise::Models::TwoFactorAuthenticatable do
     shared_examples 'generate_totp_secret' do |klass|
       let(:instance) { klass.new }
 
-      it 'returns a 16 character string' do
+      it 'returns a 32 character string' do
         secret = instance.generate_totp_secret
 
-        expect(secret).to match(/\w{16}/)
+        expect(secret).to match(/\w{32}/)
       end
     end
 
