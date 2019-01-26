@@ -54,7 +54,7 @@ migration in `db/migrate/`, which will add the following columns to your table:
 #### Manual initial setup
 
 If you prefer to set up the model and migration manually, add the
-`:two_factor_authentication` option to your existing devise options, such as:
+`:two_factor_authenticatable` option to your existing devise options, such as:
 
 ```ruby
 devise :database_authenticatable, :registerable, :recoverable, :rememberable,
