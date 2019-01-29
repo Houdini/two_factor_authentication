@@ -6,6 +6,6 @@ class TotpHelper
   end
 
   def totp_code(time = Time.now)
-    ROTP::TOTP.new(@secret_key, digits: @otp_length).at(time, true)
+    ROTP::TOTP.new(@secret_key, digits: @otp_length).at(time)
   end
 end

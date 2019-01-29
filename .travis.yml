@@ -2,13 +2,13 @@ language: ruby
 
 env:
   - "RAILS_VERSION=4.2"
-  - "RAILS_VERSION=5.1"
+  - "RAILS_VERSION=5.2"
   - "RAILS_VERSION=master"
 
 rvm:
-  - 2.3.6
-  - 2.4.3
-  - 2.5.0
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
 
 matrix:
   fast_finish: true
@@ -19,7 +19,8 @@ matrix:
       env: RAILS_VERSION=4.2
 
 before_install:
-  - gem update bundler
+  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler -v '< 2'
 
 before_script:
   - bundle exec rake app:db:setup
