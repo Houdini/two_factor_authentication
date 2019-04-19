@@ -395,7 +395,6 @@ to set TOTP to DISABLED for a user account:
    current_user.totp_timestamp=nil
    current_user.direct_otp=nil
    current_user.otp_secret_key=nil
-   current_user.otp_confirmed=nil
    current_user.save! (if in ruby code instead of console)
    current_user.direct_otp? => false
    current_user.totp_enabled? => false
