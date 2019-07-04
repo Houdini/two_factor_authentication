@@ -92,6 +92,9 @@ module Devise
         end
 
         def generate_totp_secret
+          # ROTP gem since version 5 to version 5.1
+          # at version 5.1 ROTP gem reinstates.
+          # Details: https://github.com/mdp/rotp/blob/master/CHANGELOG.md#510
           ROTP::Base32.try(:random) || ROTP::Base32.random_base32
         end
 
