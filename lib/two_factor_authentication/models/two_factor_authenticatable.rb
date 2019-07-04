@@ -92,7 +92,7 @@ module Devise
         end
 
         def generate_totp_secret
-          ROTP::Base32.random_base32
+          ROTP::Base32.try(:random) || ROTP::Base32.random_base32
         end
 
         def create_direct_otp(options = {})
