@@ -61,7 +61,7 @@ module Devise
         end
 
         def send_new_otp(options = {})
-          create_direct_otp options
+          create_direct_otp(options)
           send_two_factor_authentication_code(direct_otp)
         end
 
@@ -101,9 +101,10 @@ module Devise
         def create_direct_otp(options = {})
           # Create a new random OTP and store it in the database
           digits = options[:length] || self.class.direct_otp_length || 6
-          self.direct_otp = random_base10(digits)
-          self.direct_otp_sent_at = Time.now.utc
-          save(validate: false)
+          update_columns(
+            direct_otp: random_base10(digits),
+            direct_otp_sent_at: Time.now.utc
+          )
         end
 
         private
@@ -121,9 +122,10 @@ module Devise
         end
 
         def clear_direct_otp
-          self.direct_otp = nil
-          self.direct_otp_sent_at = nil
-          save(validate: false)
+          update_columns(
+            direct_otp: nil,
+            direct_otp_sent_at: nil
+          )
         end
       end
 
