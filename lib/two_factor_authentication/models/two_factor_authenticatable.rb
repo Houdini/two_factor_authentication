@@ -36,7 +36,7 @@ module Devise
         def authenticate_totp(code, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
           digits = options[:otp_length] || (self.respond_to?(:otp_length) && self.otp_length) || self.class.otp_length
-          drift = options[:drift] || self.class.allowed_otp_drift_seconds
+          drift = options[:drift] || (self.respond_to?(:allowed_otp_drift_seconds) && self.allowed_otp_drift_seconds) || self.class.allowed_otp_drift_seconds
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
