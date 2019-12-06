@@ -35,8 +35,8 @@ module Devise
 
         def authenticate_totp(code, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
-          digits = options[:otp_length] || self.otp_length
-          drift = options[:drift] || self.allowed_otp_drift_seconds
+          digits = options[:otp_length] || (self.respond_to?(:otp_length) && self.otp_length) || self.class.otp_length
+          drift = options[:drift] || self.class.allowed_otp_drift_seconds
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
@@ -50,7 +50,7 @@ module Devise
 
         def provisioning_uri(account = nil, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
-          options[:digits] ||= options[:otp_length] || self.otp_length
+          options[:digits] ||= options[:otp_length] || (self.respond_to?(:otp_length) && self.otp_length) || self.class.otp_length
           raise "provisioning_uri called with no otp_secret_key set" if totp_secret.nil?
           account ||= email if respond_to?(:email)
           ROTP::TOTP.new(totp_secret, options).provisioning_uri(account)
@@ -74,7 +74,7 @@ module Devise
         end
 
         def max_login_attempts?
-          second_factor_attempts_count.to_i >= max_login_attempts.to_i
+          second_factor_attempts_count.to_i > max_login_attempts.to_i
         end
 
         def max_login_attempts
@@ -104,7 +104,7 @@ module Devise
 
         def create_direct_otp(options = {})
           # Create a new random OTP and store it in the database
-          digits = options[:length] || self.direct_otp_length || 6
+          digits = options[:length] || (self.respond_to?(:direct_otp_length) && self.direct_otp_length) || self.class.direct_otp_length || 6
           update_attributes(
             direct_otp: random_base10(digits),
             direct_otp_sent_at: Time.now.utc
