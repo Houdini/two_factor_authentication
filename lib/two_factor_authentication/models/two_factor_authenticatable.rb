@@ -170,11 +170,19 @@ module Devise
         def encryption_options_for(value)
           {
             value: value,
-            key: Devise.otp_secret_encryption_key,
+            key: otp_secret_encryption_key,
             iv: iv_for_attribute,
             salt: salt_for_attribute,
             algorithm: 'aes-256-cbc'
           }
+        end
+
+        def otp_secret_encryption_key
+          if self.respond_to?(:otp_secret_encryption_key)
+            self.otp_secret_encryption_key
+          else
+            Devise.otp_secret_encryption_key
+          end
         end
 
         def iv_for_attribute(algorithm = 'aes-256-cbc')
