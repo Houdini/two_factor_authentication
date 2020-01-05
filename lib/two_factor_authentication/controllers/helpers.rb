@@ -35,8 +35,13 @@ module TwoFactorAuthentication
 
       def two_factor_authentication_path_for(resource_or_scope = nil)
         scope = Devise::Mapping.find_scope!(resource_or_scope)
+        namespace = if Devise.available_router_name
+          send(Devise.available_router_name)
+        else
+          self
+        end
         change_path = "#{scope}_two_factor_authentication_path"
-        send(change_path)
+        namespace.send(change_path)
       end
 
     end
