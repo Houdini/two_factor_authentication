@@ -385,7 +385,7 @@ this returns true or false with an allowed_otp_drift_seconds 'grace period'
 
 to set TOTP to DISABLED for a user account:
 
-   ```
+   ```ruby
    current_user.second_factor_attempts_count=nil
    current_user.encrypted_otp_secret_key=nil
    current_user.encrypted_otp_secret_key_iv=nil
@@ -395,7 +395,7 @@ to set TOTP to DISABLED for a user account:
    current_user.totp_timestamp=nil
    current_user.direct_otp=nil
    current_user.otp_secret_key=nil
-   current_user.save! (if in ruby code instead of console)
+   current_user.save! # (if in ruby code instead of console)
    current_user.direct_otp? => false
    current_user.totp_enabled? => false
    ```
