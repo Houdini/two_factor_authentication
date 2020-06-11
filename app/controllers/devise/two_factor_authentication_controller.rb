@@ -62,6 +62,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     set_flash_message :alert, :attempt_failed, now: true
 
     if resource.max_login_attempts?
+      resource.update(second_factor_attempts_locked_at: Time.now)
       sign_out(resource)
       render :max_login_attempts_reached
     else

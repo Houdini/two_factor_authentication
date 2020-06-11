@@ -4,6 +4,10 @@ module TwoFactorAuthentication
       apply_devise_schema :second_factor_attempts_count, Integer, :default => 0
     end
 
+    def second_factor_attempts_locked_at
+      apply_devise_schema :second_factor_attempts_locked_at, DateTime
+    end
+
     def encrypted_otp_secret_key
       apply_devise_schema :encrypted_otp_secret_key, String
     end
