@@ -9,10 +9,25 @@ describe "API request", type: :request do
     end
 
     context "with json" do
-      it "returns 401 when path requires authentication" do
-        get "/dashboard.json"
-        expect(response.response_code).to eq(401)
-        expect(JSON.parse(response.body)["redirect_to"]).to eq(user_two_factor_authentication_path)
+      context "with totp authentication" do
+        it "returns 401 when path requires authentication" do
+          get "/dashboard.json"
+          expect(response.response_code).to eq(401)
+          body = JSON.parse(response.body)
+          expect(body["redirect_to"]).to eq(user_two_factor_authentication_path)
+          expect(body["authentication_type"]).to eq("totp")
+        end
+      end
+
+      context "with direct otp authentication" do
+        it "returns 401 when path requires authentication" do
+          user.update!(direct_otp: true)
+          get "/dashboard.json"
+          expect(response.response_code).to eq(401)
+          body = JSON.parse(response.body)
+          expect(body["redirect_to"]).to eq(user_two_factor_authentication_path)
+          expect(body["authentication_type"]).to eq("otp")
+        end
       end
 
       context "after TFA" do
