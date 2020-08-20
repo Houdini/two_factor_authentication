@@ -25,7 +25,10 @@ module TwoFactorAuthentication
           redirect_to two_factor_authentication_path_for(scope)
         elsif request.format&.json?
           session["#{scope}_return_to"] = root_path(format: :html)
-          render json: { redirect_to: two_factor_authentication_path_for(scope) }, status: :unauthorized
+          render json: {
+            redirect_to: two_factor_authentication_path_for(scope),
+            authentication_type: send("current_#{scope}")&.direct_otp ? :otp : :totp
+          }, status: :unauthorized
         else
           head :unauthorized
         end
