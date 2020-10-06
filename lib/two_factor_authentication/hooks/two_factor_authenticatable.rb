@@ -1,4 +1,5 @@
 Warden::Manager.after_authentication do |user, auth, options|
+  debugger
   scopes_to_skip = [Rails.application.config.devise.skip_send_new_otp_in_after_set_user_for].compact.flatten
   unless options["scope"].in?(scopes_to_skip)
     if auth.env["action_dispatch.cookies"]
