@@ -152,6 +152,21 @@ feature "User of two factor authentication" do
         expect(page).to have_content("Enter the code that was sent to you")
       end
 
+      scenario 'Sends OTP code by SMS' do
+        login_as user
+        SMSProvider.messages.clear()
+        visit dashboard_path
+        expect(SMSProvider.messages).not_to be_empty
+      end
+
+      scenario "Doesn't sends OTP code by SMS upon every request if so configured" do
+        login_as user
+        SMSProvider.messages.clear()
+        allow(Rails.application.config.devise).to receive(:skip_send_new_otp_in_after_set_user_for).and_return([:user])
+        visit dashboard_path
+        expect(SMSProvider.messages).to be_empty
+      end
+
       scenario 'TFA should be different for different users' do
         sms_sign_in
 
