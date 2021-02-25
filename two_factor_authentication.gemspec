@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["dmitrii.golub@gmail.com"]
   s.homepage    = "https://github.com/Houdini/two_factor_authentication"
   s.summary     = %q{Two factor authentication plugin for devise}
+  s.license     = "MIT"
   s.description = <<-EOF
     ### Features ###
     * control sms code pattern
