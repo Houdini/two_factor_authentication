@@ -21,6 +21,8 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.after(:each) { Timecop.return }
+
+  config.include Devise::Test::IntegrationHelpers, type: :request
 end
 
 Dir["#{Dir.pwd}/spec/support/**/*.rb"].each {|f| require f}
