@@ -136,6 +136,19 @@ feature "User of two factor authentication" do
         expect(page).to have_content("Enter the code that was sent to you")
       end
 
+      scenario "requires TFA code again after if expiry date changes" do
+        sms_sign_in
+
+        logout
+
+        User.remember_otp_session_for_seconds = 1.day
+        Timecop.travel(1.day.from_now)
+        login_as user
+        visit dashboard_path
+        expect(page).to have_content("You are signed in as Marissa")
+        expect(page).to have_content("Enter the code that was sent to you")
+      end
+
       scenario 'TFA should be different for different users' do
         sms_sign_in
 

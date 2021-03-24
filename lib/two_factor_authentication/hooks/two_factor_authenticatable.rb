@@ -1,8 +1,10 @@
 Warden::Manager.after_authentication do |user, auth, options|
   if auth.env["action_dispatch.cookies"]
-    expected_cookie_value = "#{user.class}-#{user.public_send(Devise.second_factor_resource_id)}"
-    actual_cookie_value = auth.env["action_dispatch.cookies"].signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME]
-    bypass_by_cookie = actual_cookie_value == expected_cookie_value
+    cookie = auth.env["action_dispatch.cookies"].signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME]
+    bypass_by_cookie   = cookie.present?
+    bypass_by_cookie &&= cookie["user_class"] == user.class.to_s
+    bypass_by_cookie &&= cookie["user_id"]    == user.id.to_s
+    bypass_by_cookie &&= Time.current         <= cookie["created_at"].to_datetime + user.class.remember_otp_session_for_seconds
   end
 
   if user.respond_to?(:need_two_factor_authentication?) && !bypass_by_cookie
