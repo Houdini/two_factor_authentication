@@ -65,7 +65,7 @@ devise :database_authenticatable, :registerable, :recoverable, :rememberable,
 
 Then create your migration file using the Rails generator, such as:
 
-```
+```bash
 rails g migration AddTwoFactorFieldsToUsers otp_enabled:boolean second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
 ```
 
@@ -207,7 +207,7 @@ steps:
 
 1. Generate a migration to add the necessary columns to your model's table:
 
-   ```
+   ```bash
    rails g migration AddEncryptionFieldsToUsers encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string
    ```
 
@@ -228,7 +228,7 @@ steps:
    For example: `has_one_time_password(encrypted: true)`
 
 4. Generate a migration to populate the new encryption fields:
-   ```
+   ```bash
    rails g migration PopulateEncryptedOtpFields
    ```
 
@@ -256,7 +256,7 @@ steps:
    ```
 
 5. Generate a migration to remove the `:otp_secret_key` column:
-   ```
+   ```bash
    rails g migration RemoveOtpSecretKeyFromUsers otp_secret_key:string
    ```
 
@@ -269,7 +269,7 @@ use these steps:
 
 2. Roll back the last 3 migrations (assuming you haven't added any new ones
 after them):
-   ```
+   ```bash
    bundle exec rake db:rollback STEP=3
    ```
 
@@ -299,7 +299,7 @@ Make sure you are passing the 2FA secret codes securely and checking for them up
 
  For example, a simple account_controller.rb may look something like this:
 
-   ```
+   ```ruby
    require 'json'
 
    class AccountController < ApplicationController
@@ -363,7 +363,7 @@ config.otp_secret_encryption_key = ENV['OTP_SECRET_ENCRYPTION_KEY']
 
 to set up TOTP for Google Authenticator for user:
 
-   ```
+   ```ruby
    current_user.otp_secret_key =  current_user.generate_totp_secret
    current_user.save!
    ```
@@ -374,16 +374,16 @@ rails c access relies on setting env var: OTP_SECRET_ENCRYPTION_KEY )
 to check if user has input the correct code (from the QR display page)
 before saving the user model:
 
-   ```
+   ```ruby
    current_user.authenticate_totp('123456')
    ```
 
 additional note:
- 
-   ```
+
+   ```ruby
    current_user.otp_secret_key
    ```
-   
+
 This returns the OTP secret key in plaintext for the user (if you have set the env var) in the console
 the string used for generating the QR given to the user for their Google Auth is something like:
 
@@ -395,7 +395,7 @@ this returns true or false with an allowed_otp_drift_seconds 'grace period'
 
 to set TOTP to DISABLED for a user account:
 
-   ```
+   ```ruby
    current_user.second_factor_attempts_count=nil
    current_user.encrypted_otp_secret_key=nil
    current_user.encrypted_otp_secret_key_iv=nil
