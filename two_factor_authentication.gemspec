@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'randexp'
   s.add_runtime_dependency 'rotp', '>= 4.0.0'
   s.add_runtime_dependency 'encryptor'
+  s.add_runtime_dependency 'rqrcode', '>= 0.10.1'
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'

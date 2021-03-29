@@ -50,6 +50,7 @@ module AuthenticatedModelHelper
           t.string    'direct_otp'
           t.datetime  'direct_otp_sent_at'
           t.timestamp 'totp_timestamp'
+          t.boolean   'otp_enabled', default: true
         end
       end
     end

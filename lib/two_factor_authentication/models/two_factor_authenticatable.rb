@@ -37,10 +37,10 @@ module Devise
           totp_secret = options[:otp_secret_key] || otp_secret_key
           digits = options[:otp_length] || self.class.otp_length
           drift = options[:drift] || self.class.allowed_otp_drift_seconds
-          raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
+          fail 'authenticate_totp called with no otp_secret_key set' if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
-            without_spaces(code), 
+            without_spaces(code),
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
@@ -51,7 +51,7 @@ module Devise
         def provisioning_uri(account = nil, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
           options[:digits] ||= options[:otp_length] || self.class.otp_length
-          raise "provisioning_uri called with no otp_secret_key set" if totp_secret.nil?
+          fail 'provisioning_uri called with no otp_secret_key set' if totp_secret.nil?
           account ||= email if respond_to?(:email)
           ROTP::TOTP.new(totp_secret, options).provisioning_uri(account)
         end
@@ -66,11 +66,11 @@ module Devise
         end
 
         def send_new_otp_after_login?
-          !totp_enabled?
+          otp_enabled && !totp_enabled?
         end
 
         def send_two_factor_authentication_code(code)
-          raise NotImplementedError.new("No default implementation - please define in your class.")
+          fail NotImplementedError.new('No default implementation - please define in your class.')
         end
 
         def max_login_attempts?
@@ -85,10 +85,28 @@ module Devise
           respond_to?(:otp_secret_key) && !otp_secret_key.nil?
         end
 
-        def confirm_totp_secret(secret, code, options = {})
-          return false unless authenticate_totp(code, {otp_secret_key: secret})
+        def confirm_otp(secret, code)
+          if direct_otp && authenticate_direct_otp(code)
+            return enable_otp
+          end
+          confirm_totp_secret(secret, code)
+        end
+
+        def confirm_totp_secret(secret, code, _options = {})
+          return false unless authenticate_totp(code, otp_secret_key: secret)
           self.otp_secret_key = secret
-          true
+          self.otp_enabled = true
+        end
+
+        def enable_otp
+          self.otp_enabled = true
+          save
+        end
+
+        def disable_otp
+          self.otp_secret_key = nil
+          self.otp_enabled = false
+          save
         end
 
         def generate_totp_secret

@@ -3,6 +3,11 @@ en:
     two_factor_authentication:
       success: "Two factor authentication successful."
       attempt_failed: "Attempt failed."
+      confirm_failed: "Your code did not match, or expired after scanning. Remove the old barcode from your app, and try again. Since this process is time-sensitive, make sure your device's date and time is set to 'automatic'."
+      remove_success: "Two factor authentication successful disabled"
+      remove_failed: "Your code did not match, please try again."
       max_login_attempts_reached: "Access completely denied as you have reached your attempts limit"
       contact_administrator: "Please contact your system administrator."
       code_has_been_sent: "Your authentication code has been sent."
+      totp_already_enabled: "Two factor authentication is already enabled."
+      totp_not_enabled: "Two factor authentication is not enabled. Activate first."

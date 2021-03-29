@@ -18,7 +18,6 @@ feature "User of two factor authentication" do
       it 'sends code via SMS after sign in' do
         visit new_user_session_path
         complete_sign_in_form_for(user)
-
         expect(page).to have_content 'Enter the code that was sent to you'
 
         expect(SMSProvider.messages.size).to eq(1)
@@ -44,8 +43,8 @@ feature "User of two factor authentication" do
       end
     end
 
-    it_behaves_like 'sends and authenticates code', create_user('not_encrypted')
-    it_behaves_like 'sends and authenticates code', create_user, 'encrypted'
+    it_behaves_like 'sends and authenticates code', create_user('not_encrypted', otp_enabled: true)
+    it_behaves_like 'sends and authenticates code', create_user('encrypted', otp_enabled: true), 'encrypted'
   end
 
   scenario "must be logged in" do
@@ -55,8 +54,48 @@ feature "User of two factor authentication" do
     expect(page).to have_content("You are signed out")
   end
 
+  context "when logged in without otp enabled" do
+    let(:user) { create_user('encrypted', otp_enabled: false) }
+
+    background do
+      login_as user
+    end
+
+    scenario "is redirected to TFA activation when path requires authentication" do
+      visit dashboard_path + "?A=param%20a&B=param%20b"
+
+      expect(page).to_not have_content("Your Personal Dashboard")
+      expect(page).to have_xpath('//img')
+    end
+
+    scenario "can enable TFA with a TOTP code" do
+      visit new_user_two_factor_authentication_path
+
+      secret = find(:css, 'i#totp_secret').text
+      totp = ROTP::TOTP.new(secret)
+      fill_in "code", with: totp.now
+      click_button "Confirm and activate"
+
+      expect(page).to have_content("You are signed in as Marissa")
+      expect(page).to have_content("Welcome Home")
+    end
+
+    scenario "can enable TFA with a direct code" do
+      visit new_user_two_factor_authentication_path
+
+      click_link "Send me a code instead"
+
+      visit new_user_two_factor_authentication_path
+      fill_in 'code', with: SMSProvider.last_message.body
+      click_button "Confirm and activate"
+
+      expect(page).to have_content("You are signed in as Marissa")
+      expect(page).to have_content("Welcome Home")
+    end
+  end
+
   context "when logged in" do
-    let(:user) { create_user }
+    let(:user) { create_user('encrypted', otp_enabled: true) }
 
     background do
       login_as user
@@ -144,7 +183,7 @@ feature "User of two factor authentication" do
         logout
         reset_session!
 
-        user2 = create_user()
+        user2 = create_user('encrypted', otp_enabled: true)
         login_as(user2)
         sms_sign_in
 
@@ -168,7 +207,7 @@ feature "User of two factor authentication" do
         logout
         reset_session!
 
-        user2 = create_user()
+        user2 = create_user('encrypted', otp_enabled: true)
         set_tfa_cookie(tfa_cookie1)
         login_as(user2)
         visit dashboard_path

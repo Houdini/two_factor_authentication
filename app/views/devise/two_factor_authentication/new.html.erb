@@ -1,0 +1,42 @@
+<h2>Enable two-factor authentication</h2>
+
+<p><%= flash[:notice] %></p>
+
+<h3>Authentication with an app</h3>
+
+<h5>Get the app</h5>
+<p>
+  Download and install one of the following apps for your phone or table:<br>
+  - Google Authenticator<br>
+  - Duo Mobile<br>
+  - Authy<br>
+  - Windows Phone Authenticator
+</p>
+
+<h4>Scan this barcode</h4>
+<%= image_tag @qr %>
+<p>
+  Open the authentication app and:<br>
+  - Tap the "+" icon in the top-right of the app<br>
+  - Scan the image to the left, using your phone's camera<br>
+  <br>
+  <b>Can't scan this barcode?</b><br>
+  Instead of scanning, use your authentication app's "Manual entry" or equivalent option and provide the following time-based key.<br>
+  <br>
+  <b><i id='totp_secret'><%= @totp_secret %></i></b><br>
+  <br>
+  Your app will then generate a 6-digit verification code, which you use below.
+</p>
+
+<h3>Authentication via code</h3>
+
+<%= link_to 'Send me a code instead', resend_code_user_two_factor_authentication_path, remote: true %>
+<br><br>
+
+<%= form_tag([resource_name, :two_factor_authentication]) do %>
+  <%= text_field_tag :code, nil, placeholder: 'Enter code', autocomplete: 'off' %>
+  <%= hidden_field_tag :totp_secret, @totp_secret %>
+
+  <%= submit_tag 'Confirm and activate' %>
+<% end %>
+
