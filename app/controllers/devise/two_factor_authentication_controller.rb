@@ -73,7 +73,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
     # For compatability with devise versions below v4.2.0
     # https://github.com/plataformatec/devise/commit/2044fffa25d781fcbaf090e7728b48b65c854ccb
-    if Devise::VERSION.to_f >= 4.2
+    if respond_to?(:bypass_sign_in)
       bypass_sign_in(resource, scope: resource_name)
     else
       sign_in(resource_name, resource, bypass: true)
@@ -90,7 +90,7 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     if expires_seconds && expires_seconds > 0
       cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
           value: "#{resource.class}-#{resource.public_send(Devise.second_factor_resource_id)}",
-          expires: expires_seconds.from_now
+          expires: expires_seconds.seconds.from_now
       }
     end
   end

@@ -16,7 +16,7 @@ module Devise
         ::Devise::Models.config(
           self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length,
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
-          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp
+          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp, :delete_cookie_on_logout
         )
       end
 
@@ -39,7 +39,10 @@ module Devise
           drift = options[:drift] || self.class.allowed_otp_drift_seconds
           fail 'authenticate_totp called with no otp_secret_key set' if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
-          new_timestamp = totp.verify_with_drift_and_prior(code, drift, totp_timestamp)
+          new_timestamp = totp.verify(
+            without_spaces(code),
+            drift_ahead: drift, drift_behind: drift, after: totp_timestamp
+          )
           return false unless new_timestamp
           self.totp_timestamp = new_timestamp
           true
@@ -60,6 +63,10 @@ module Devise
         def send_new_otp(options = {})
           create_direct_otp options
           send_two_factor_authentication_code(direct_otp)
+        end
+
+        def send_new_otp_after_login?
+          otp_enabled && !totp_enabled?
         end
 
         def send_two_factor_authentication_code(code)
@@ -103,7 +110,10 @@ module Devise
         end
 
         def generate_totp_secret
-          ROTP::Base32.random_base32
+          # ROTP gem since version 5 to version 5.1
+          # at version 5.1 ROTP gem reinstates.
+          # Details: https://github.com/mdp/rotp/blob/master/CHANGELOG.md#510
+          ROTP::Base32.try(:random) || ROTP::Base32.random_base32
         end
 
         def create_direct_otp(options = {})
@@ -116,6 +126,10 @@ module Devise
         end
 
         private
+
+        def without_spaces(code)
+          code.gsub(/\s/, '')
+        end
 
         def random_base10(digits)
           SecureRandom.random_number(10**digits).to_s.rjust(digits, '0')
@@ -132,16 +146,16 @@ module Devise
 
       module EncryptionInstanceMethods
         def otp_secret_key
-          decrypt(encrypted_otp_secret_key)
+          otp_decrypt(encrypted_otp_secret_key)
         end
 
         def otp_secret_key=(value)
-          self.encrypted_otp_secret_key = encrypt(value)
+          self.encrypted_otp_secret_key = otp_encrypt(value)
         end
 
         private
 
-        def decrypt(encrypted_value)
+        def otp_decrypt(encrypted_value)
           return encrypted_value if encrypted_value.blank?
 
           encrypted_value = encrypted_value.unpack('m').first
@@ -156,7 +170,7 @@ module Devise
           value
         end
 
-        def encrypt(value)
+        def otp_encrypt(value)
           return value if value.blank?
 
           value = value.to_s
@@ -172,7 +186,8 @@ module Devise
             value: value,
             key: Devise.otp_secret_encryption_key,
             iv: iv_for_attribute,
-            salt: salt_for_attribute
+            salt: salt_for_attribute,
+            algorithm: 'aes-256-cbc'
           }
         end
 
@@ -180,7 +195,7 @@ module Devise
           iv = encrypted_otp_secret_key_iv
 
           if iv.nil?
-            algo = OpenSSL::Cipher::Cipher.new(algorithm)
+            algo = OpenSSL::Cipher.new(algorithm)
             iv = [algo.random_iv].pack('m')
             self.encrypted_otp_secret_key_iv = iv
           end

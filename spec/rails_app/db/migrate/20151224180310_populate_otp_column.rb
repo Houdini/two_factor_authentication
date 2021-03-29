@@ -1,4 +1,4 @@
-class PopulateOtpColumn < ActiveRecord::Migration
+class PopulateOtpColumn < ActiveRecord::Migration[4.2]
   def up
     User.reset_column_information
 

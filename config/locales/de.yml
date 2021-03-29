@@ -1,0 +1,8 @@
+de:
+  devise:
+    two_factor_authentication:
+      success: "Ihre Zwei-Faktor-Authentifizierung war erfolgreich."
+      attempt_failed: "Authentifizierungsversuch fehlgeschlagen."
+      max_login_attempts_reached: "Ihr Zugang wurde ganz verweigert, da Sie Ihr Versuchslimit erreicht haben."
+      contact_administrator: "Kontaktieren Sie bitte einen Ihrer Administratoren."
+      code_has_been_sent: "Ihr Einmal-Passwort wurde verschickt."

@@ -126,6 +126,14 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
   end
 
   describe 'is_fully_authenticated? helper' do
+    def post_code(code, action=:update)
+      if Rails::VERSION::MAJOR >= 5
+        post :update, params: { code: code }
+      else
+        post :update, code: code
+      end
+    end
+
     before do
       sign_in create_user('not_encrypted', otp_enabled: true)
     end
@@ -133,7 +141,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
     context 'after user enters valid OTP code' do
       it 'returns true' do
         controller.current_user.send_new_otp
-        post :verify, code: controller.current_user.direct_otp
+        post_code controller.current_user.direct_otp, :verify
         expect(subject.is_fully_authenticated?).to eq true
       end
     end
@@ -148,7 +156,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
     context 'when user enters an invalid OTP' do
       it 'returns false' do
-        post :verify, code: '12345'
+        post_code '12345', :verify
 
         expect(subject.is_fully_authenticated?).to eq false
       end

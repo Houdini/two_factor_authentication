@@ -86,6 +86,11 @@ describe Devise::Models::TwoFactorAuthenticatable do
         expect(do_invoke(code, instance)).to eq(true)
       end
 
+      it 'authenticates a code entered with a space' do
+        code = @totp_helper.totp_code.insert(3, ' ')
+        expect(do_invoke(code, instance)).to eq(true)
+      end
+
       it 'does not authenticate an old code' do
         code = @totp_helper.totp_code(1.minutes.ago.to_i)
         expect(do_invoke(code, instance)).to eq(false)
@@ -133,12 +138,12 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
         it "returns uri with user's email" do
           expect(instance.provisioning_uri).
-            to match(%r{otpauth://totp/houdini@example.com\?secret=\w{16}})
+            to match(%r{otpauth://totp/houdini@example.com\?secret=\w{32}})
         end
 
         it 'returns uri with issuer option' do
           expect(instance.provisioning_uri('houdini')).
-            to match(%r{otpauth://totp/houdini\?secret=\w{16}$})
+            to match(%r{otpauth://totp/houdini\?secret=\w{32}$})
         end
 
         it 'returns uri with issuer option' do
@@ -150,7 +155,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
           expect(uri.host).to eq('totp')
           expect(uri.path).to eq('/Magic:houdini')
           expect(params['issuer'].shift).to eq('Magic')
-          expect(params['secret'].shift).to match(/\w{16}/)
+          expect(params['secret'].shift).to match(/\w{32}/)
         end
       end
     end
@@ -163,10 +168,10 @@ describe Devise::Models::TwoFactorAuthenticatable do
     shared_examples 'generate_totp_secret' do |klass|
       let(:instance) { klass.new }
 
-      it 'returns a 16 character string' do
+      it 'returns a 32 character string' do
         secret = instance.generate_totp_secret
 
-        expect(secret).to match(/\w{16}/)
+        expect(secret).to match(/\w{32}/)
       end
     end
 
@@ -280,16 +285,20 @@ describe Devise::Models::TwoFactorAuthenticatable do
           to raise_error ArgumentError
       end
 
-      it 'passes in the correct options to Encryptor' do
+      it 'passes in the correct options to Encryptor.
+          We test here output of
+          Devise::Models::TwoFactorAuthenticatable::EncryptionInstanceMethods.encryption_options_for' do
         instance.otp_secret_key = 'testing'
         iv = instance.encrypted_otp_secret_key_iv
         salt = instance.encrypted_otp_secret_key_salt
 
+        # it's important here to put the same crypto algorithm from that method
         encrypted = Encryptor.encrypt(
           value: 'testing',
           key: Devise.otp_secret_encryption_key,
           iv: iv.unpack('m').first,
-          salt: salt.unpack('m').first
+          salt: salt.unpack('m').first,
+          algorithm: 'aes-256-cbc'
         )
 
         expect(instance.encrypted_otp_secret_key).to eq [encrypted].pack('m')

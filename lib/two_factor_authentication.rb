@@ -2,7 +2,6 @@ require 'two_factor_authentication/version'
 require 'devise'
 require 'active_support/concern'
 require 'active_model'
-require 'active_record'
 require 'active_support/core_ext/class/attribute_accessors'
 require 'cgi'
 
@@ -30,6 +29,9 @@ module Devise
 
   mattr_accessor :second_factor_resource_id
   @@second_factor_resource_id = 'id'
+
+  mattr_accessor :delete_cookie_on_logout
+  @@delete_cookie_on_logout = false
 end
 
 module TwoFactorAuthentication
@@ -47,7 +49,7 @@ Devise.add_module :two_factor_authenticatable,
                   controller: :two_factor_authentication,
                   route: :two_factor_authentication
 
-require 'two_factor_authentication/orm/active_record'
+require 'two_factor_authentication/orm/active_record' if defined?(ActiveRecord::Base)
 require 'two_factor_authentication/routes'
 require 'two_factor_authentication/models/two_factor_authenticatable'
 require 'two_factor_authentication/rails'
