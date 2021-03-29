@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe Devise::TwoFactorAuthenticationController, type: :controller do
+  def post_params(action, params)
+    if Rails::VERSION::MAJOR >= 5
+      post action, params: params
+    else
+      post action, params
+    end
+  end
+
   describe 'Enabling otp' do
     before do
       sign_in create_user('not_encrypted', otp_enabled: false)
@@ -18,7 +26,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       context 'when users enters valid OTP code' do
         it 'returns true' do
           controller.current_user.send_new_otp
-          post :create, code: controller.current_user.direct_otp, totp_secret: 'secret'
+          post_params :create, code: controller.current_user.direct_otp, totp_secret: 'secret'
 
           expect(subject.current_user.otp_enabled).to eq true
         end
@@ -26,7 +34,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
       context 'when user enters an invalid OTP' do
         it 'return false' do
-          post :create, code: '12345', totp_secret: 'secret'
+          post_params :create, code: '12345', totp_secret: 'secret'
 
           expect(subject.current_user.otp_enabled).to eq false
         end
@@ -46,7 +54,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
         it 'returns true' do
           secret = controller.current_user.generate_totp_secret
           totp = ROTP::TOTP.new(secret)
-          post :create, code: totp.now, totp_secret: secret
+          post_params :create, code: totp.now, totp_secret: secret
 
           expect(subject.current_user.otp_enabled).to eq true
         end
@@ -54,7 +62,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
       context 'when user enters an invalid OTP' do
         it 'return false' do
-          post :create, code: '12345', totp_secret: 'secret'
+          post_params :create, code: '12345', totp_secret: 'secret'
 
           expect(subject.current_user.otp_enabled).to eq false
         end
@@ -81,7 +89,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       context 'when users enters valid OTP code' do
         it 'returns false' do
           controller.current_user.send_new_otp
-          post :update, code: controller.current_user.direct_otp
+          post_params :update, code: controller.current_user.direct_otp
 
           expect(subject.current_user.otp_enabled).to eq false
         end
@@ -89,7 +97,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
       context 'when user enters an invalid OTP' do
         it 'return true' do
-          post :update, code: '12345'
+          post_params :update, code: '12345'
 
           expect(subject.current_user.otp_enabled).to eq true
         end
@@ -109,7 +117,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
         it 'returns true' do
           secret = controller.current_user.otp_secret_key
           totp = ROTP::TOTP.new(secret)
-          post :update, code: totp.now
+          post_params :update, code: totp.now
 
           expect(subject.current_user.otp_enabled).to eq false
         end
@@ -117,7 +125,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
       context 'when user enters an invalid OTP' do
         it 'return false' do
-          post :update, code: '12345'
+          post_params :update, code: '12345'
 
           expect(subject.current_user.otp_enabled).to eq true
         end
@@ -126,14 +134,6 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
   end
 
   describe 'is_fully_authenticated? helper' do
-    def post_code(code, action=:update)
-      if Rails::VERSION::MAJOR >= 5
-        post :update, params: { code: code }
-      else
-        post :update, code: code
-      end
-    end
-
     before do
       sign_in create_user('not_encrypted', otp_enabled: true)
     end
@@ -141,7 +141,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
     context 'after user enters valid OTP code' do
       it 'returns true' do
         controller.current_user.send_new_otp
-        post_code controller.current_user.direct_otp, :verify
+        post_params :verify, code: controller.current_user.direct_otp
         expect(subject.is_fully_authenticated?).to eq true
       end
     end
@@ -156,7 +156,7 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
 
     context 'when user enters an invalid OTP' do
       it 'returns false' do
-        post_code '12345', :verify
+        post_params :verify, code: '12345'
 
         expect(subject.is_fully_authenticated?).to eq false
       end
