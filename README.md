@@ -44,6 +44,7 @@ Where MODEL is your model name (e.g. User or Admin). This generator will add
 migration in `db/migrate/`, which will add the following columns to your table:
 
 - `:second_factor_attempts_count`
+- `:lockout_reset_timeout`
 - `:encrypted_otp_secret_key`
 - `:encrypted_otp_secret_key_iv`
 - `:encrypted_otp_secret_key_salt`
@@ -64,7 +65,7 @@ devise :database_authenticatable, :registerable, :recoverable, :rememberable,
 Then create your migration file using the Rails generator, such as:
 
 ```
-rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
+rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer lockout_reset_timeout:datetime encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
 ```
 
 Open your migration file (it will be in the `db/migrate` directory and will be
@@ -271,9 +272,9 @@ to overwrite/customize user registrations. It should include the lines below, fo
    ```ruby
    class RegistrationsController < Devise::RegistrationsController
      before_action :confirm_two_factor_authenticated, except: [:new, :create, :cancel]
-   
+
      protected
-   
+
      def confirm_two_factor_authenticated
        return if is_fully_authenticated?
 
@@ -296,10 +297,10 @@ Make sure you are passing the 2FA secret codes securely and checking for them up
      before_action :require_signed_in!
      before_action :authenticate_user!
      respond_to :html, :json
-     
+
      def account_API
        resp = {}
-       begin       
+       begin
          if(account_params["twoFAKey"] && account_params["twoFASecret"])
            current_user.otp_secret_key = account_params["twoFAKey"]
            if(current_user.authenticate_totp(account_params["twoFASecret"]))
@@ -315,15 +316,15 @@ Make sure you are passing the 2FA secret codes securely and checking for them up
            if(account_params["twoFASecret"] && current_user.totp_enabled? && current_user.authenticate_totp(account_params["twoFASecret"]))
              # user has passed 2FA checks, do cool user account stuff here
              ...
-           else 
-             # user failed 2FA check! No cool user stuff happens!             
+           else
+             # user failed 2FA check! No cool user stuff happens!
               resp[error] = 'You failed 2FA validation!'
            end
-           
+
              ...
            end
          else
-           resp['error'] = 'unknown format error, not saved!'  
+           resp['error'] = 'unknown format error, not saved!'
          end
        rescue Exception => e
          puts "WARNING: account api threw error : '#{e}' for user #{current_user.username}"
@@ -332,11 +333,11 @@ Make sure you are passing the 2FA secret codes securely and checking for them up
        end
        render json: resp.to_json
      end
-   
+
      def account_params
        params.require(:twoFA).permit(:userAccountStuff, :userAcountWidget, :twoFAKey, :twoFASecret)
      end
-   end   
+   end
    ```
 
 
@@ -357,7 +358,7 @@ to set up TOTP for Google Authenticator for user:
    current_user.otp_secret_key =  current_user.generate_totp_secret
    current_user.save!
    ```
-   
+
 ( encrypted db fields are set upon user model save action,
 rails c access relies on setting env var: OTP_SECRET_ENCRYPTION_KEY )
 
@@ -369,11 +370,11 @@ before saving the user model:
    ```
 
 additional note:
- 
+
    ```
    current_user.otp_secret_key
    ```
-   
+
 This returns the OTP secret key in plaintext for the user (if you have set the env var) in the console
 the string used for generating the QR given to the user for their Google Auth is something like:
 
@@ -399,6 +400,6 @@ to set TOTP to DISABLED for a user account:
    current_user.direct_otp? => false
    current_user.totp_enabled? => false
    ```
-   
+
 
 

@@ -9,6 +9,9 @@ module Devise
   mattr_accessor :max_login_attempts
   @@max_login_attempts = 3
 
+  mattr_accessor :lockout_reset_timeout
+  @@lockout_reset_timeout = 5.minutes
+
   mattr_accessor :allowed_otp_drift_seconds
   @@allowed_otp_drift_seconds = 30
 

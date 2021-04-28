@@ -16,7 +16,8 @@ module Devise
         ::Devise::Models.config(
           self, :max_login_attempts, :allowed_otp_drift_seconds, :otp_length,
           :remember_otp_session_for_seconds, :otp_secret_encryption_key,
-          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp, :delete_cookie_on_logout
+          :direct_otp_length, :direct_otp_valid_for, :totp_timestamp, :delete_cookie_on_logout,
+          :lockout_reset_timeout
         )
       end
 
@@ -40,7 +41,7 @@ module Devise
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
-            without_spaces(code), 
+            without_spaces(code),
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
@@ -74,12 +75,14 @@ module Devise
         end
 
         def max_login_attempts?
+          reset_lockout
           second_factor_attempts_count.to_i >= max_login_attempts.to_i
         end
 
         def max_login_attempts
           self.class.max_login_attempts
         end
+
 
         def totp_enabled?
           respond_to?(:otp_secret_key) && !otp_secret_key.nil?
@@ -108,6 +111,19 @@ module Devise
         end
 
         private
+
+        def reset_lockout
+          return unless self.class.lockout_reset_timeout.present?
+
+          if should_reset_lockout?
+            update_attributes(second_factor_attempts_count: 0, second_factor_attempts_locked_at: nil)
+          end
+        end
+
+        def should_reset_lockout?
+          return unless second_factor_attempts_locked_at.present?
+          Time.now - self.class.lockout_reset_timeout > second_factor_attempts_locked_at
+        end
 
         def without_spaces(code)
           code.gsub(/\s/, '')
