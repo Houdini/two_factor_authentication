@@ -12,7 +12,7 @@ module TwoFactorAuthentication
       def handle_two_factor_authentication
         unless devise_controller?
           Devise.mappings.keys.flatten.any? do |scope|
-            if signed_in?(scope) and warden.session(scope)[TwoFactorAuthentication::NEED_AUTHENTICATION]
+            if signed_in?(scope) and warden.session(scope)[::TwoFactorAuthentication::NEED_AUTHENTICATION]
               handle_failed_second_factor(scope)
             end
           end
@@ -47,7 +47,7 @@ module Devise
   module Controllers
     module Helpers
       def is_fully_authenticated?
-        !session["warden.user.user.session"].try(:[], TwoFactorAuthentication::NEED_AUTHENTICATION)
+        !session["warden.user.user.session"].try(:[], ::TwoFactorAuthentication::NEED_AUTHENTICATION)
       end
     end
   end
