@@ -40,7 +40,7 @@ module Devise
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
-            without_spaces(code), 
+            without_spaces(code),
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
@@ -189,7 +189,7 @@ module Devise
           salt = encrypted_otp_secret_key_salt ||
                  self.encrypted_otp_secret_key_salt = generate_random_base64_encoded_salt
 
-          decode_salt_if_encoded(salt)
+          decode_otp_salt_if_encoded(salt)
         end
 
         def generate_random_base64_encoded_salt
@@ -197,7 +197,7 @@ module Devise
           prefix + [SecureRandom.random_bytes].pack('m')
         end
 
-        def decode_salt_if_encoded(salt)
+        def decode_otp_salt_if_encoded(salt)
           salt.slice(0).eql?('_') ? salt.slice(1..-1).unpack('m').first : salt
         end
       end
