@@ -64,7 +64,7 @@ devise :database_authenticatable, :registerable, :recoverable, :rememberable,
 Then create your migration file using the Rails generator, such as:
 
 ```
-rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
+rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer encrypted_otp_secret_key:string:index encrypted_otp_secret_key_iv:string encrypted_otp_secret_key_salt:string direct_otp:string direct_otp_sent_at:datetime totp_timestamp:integer
 ```
 
 Open your migration file (it will be in the `db/migrate` directory and will be
@@ -174,7 +174,7 @@ The following database fields are new in version 2.
 
 To add them, generate a migration such as:
 
-    $ rails g migration AddTwoFactorFieldsToUsers direct_otp:string direct_otp_sent_at:datetime totp_timestamp:timestamp
+    $ rails g migration AddTwoFactorFieldsToUsers direct_otp:string direct_otp_sent_at:datetime totp_timestamp:integer
 
 The `otp_secret_key` is only required for users who use TOTP (Google Authenticator) codes,
 so unless it has been shared with the user it should be set to `nil`.  The

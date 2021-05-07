@@ -25,7 +25,7 @@ module TwoFactorAuthentication
     end
 
     def totp_timestamp
-      apply_devise_schema :totp_timestamp, Timestamp
+      apply_devise_schema :totp_timestamp, Integer
     end
   end
 end
