@@ -20,11 +20,11 @@ module FeaturesSpecHelper
   end
 
   def set_tfa_cookie value
-    set_cookie TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME, value
+    set_cookie TwoFactorAuthentication::name_for(:remember_tfa_cookie_name, "user"), value
   end
 
   def get_tfa_cookie
-    get_cookie TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME
+    get_cookie TwoFactorAuthentication::name_for(:remember_tfa_cookie_name, "user")
   end
 end
 
