@@ -27,6 +27,8 @@ module TwoFactorAuthentication
           elsif request.format.json?
             session["#{scope}_return_to"] = root_path(format: :html)
             render json: { redirect_to: two_factor_authentication_path_for(scope) }, status: :unauthorized
+          else
+            head :unauthorized
           end
         else
           head :unauthorized
