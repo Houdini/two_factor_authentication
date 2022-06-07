@@ -1,11 +1,4 @@
-begin
-  require 'bundler/setup'
-rescue LoadError
-  puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
-end
-
 require "bundler/gem_tasks"
-require_relative "spec/rails_app/config/application"
 
 APP_RAKEFILE = File.expand_path("../spec/rails_app/Rakefile", __FILE__)
 load 'rails/tasks/engine.rake'

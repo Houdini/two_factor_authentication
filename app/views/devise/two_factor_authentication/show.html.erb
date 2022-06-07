@@ -6,14 +6,14 @@
 
 <p><%= flash[:notice] %></p>
 
-<%= form_tag([resource_name, :two_factor_authentication], method: :put) do %>
+<%= form_tag([resource_name, :two_factor_authentication], :method => :put) do %>
   <%= text_field_tag :code, '', autofocus: true %>
   <%= submit_tag "Submit" %>
 <% end %>
 
 <% if resource.direct_otp %>
-  <%= link_to "Resend Code", send("resend_code_#{resource_name}_two_factor_authentication_path"), method: :post %>
+  <%= link_to "Resend Code", send("resend_code_#{resource_name}_two_factor_authentication_path"), action: :get %>
 <% else %>
-<%= link_to "Send me a code instead", send("resend_code_#{resource_name}_two_factor_authentication_path"), method: :post %>
+<%= link_to "Send me a code instead", send("resend_code_#{resource_name}_two_factor_authentication_path"), action: :get %>
 <% end %>
-<%= link_to "Sign out", send("destroy_#{resource_name}_session_path"), method: :delete %>
+<%= link_to "Sign out", send("destroy_#{resource_name}_session_path"), :method => :delete %>
