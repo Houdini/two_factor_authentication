@@ -1,8 +1,10 @@
 # Change Log
 
-## [Unreleased](https://github.com/Houdini/two_factor_authentication/tree/HEAD)
+## [Unreleased](https://github.com/r6e/two_factor_authentication/tree/HEAD)
 
-[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...r6e:main)
+[Full Changelog](https://github.com/r6e/two_factor_authentication/compare/v3.0.0...main)
+
+## [v3.0.0](https://github.com/r6e/two_factor_authentication/tree/v3.0.0)
 
 **Merged pull requests:**
 
