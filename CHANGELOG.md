@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- Change `resend_code` endpoint to `POST` [\#7](https://github.com/r6e/two_factor_authentication/pull/7)
 - Update gems [\#6](https://github.com/r6e/two_factor_authentication/pull/6)
 - Change update_attributes to update_columns [\#5](https://github.com/r6e/two_factor_authentication/pull/5)
 - Update test configuration [\#4](https://github.com/r6e/two_factor_authentication/pull/4)
