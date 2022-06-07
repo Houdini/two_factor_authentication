@@ -60,4 +60,3 @@ module Dummy
     config.secret_key_base = 'secretvalue'
   end
 end
-
