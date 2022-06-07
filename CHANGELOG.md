@@ -2,10 +2,12 @@
 
 ## [Unreleased](https://github.com/Houdini/two_factor_authentication/tree/HEAD)
 
-[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...HEAD)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...r6e:main)
 
 **Merged pull requests:**
 
+- Fix url encoding issue in test regex [\#2](https://github.com/r6e/two_factor_authentication/pull/2)
+- Add manifest.js to test rails app [\#1](https://github.com/r6e/two_factor_authentication/pull/1)
 - Fix class detection in reset\_otp\_state\_for\(user\) [\#69](https://github.com/Houdini/two_factor_authentication/pull/69) ([monfresh](https://github.com/monfresh))
 - Add ability to resend code [\#52](https://github.com/Houdini/two_factor_authentication/pull/52) ([iDiogenes](https://github.com/iDiogenes))
 
