@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- Change migration name to more verb-y form [\#9](https://github.com/r6e/two_factor_authentication/pull/9)
 - Fix default behavior for `request.format` in `handle_failed_second_factor` [\#8](https://github.com/r6e/two_factor_authentication/pull/8)
 - Change `resend_code` endpoint to `POST` [\#7](https://github.com/r6e/two_factor_authentication/pull/7)
 - Update gems [\#6](https://github.com/r6e/two_factor_authentication/pull/6)

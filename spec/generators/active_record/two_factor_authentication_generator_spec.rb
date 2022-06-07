@@ -21,7 +21,7 @@ describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :gene
     end
 
     describe 'the migration' do
-      subject { migration_file('db/migrate/two_factor_authentication_add_to_users.rb') }
+      subject { migration_file('db/migrate/add_two_factor_authentication_to_users.rb') }
 
       it { is_expected.to exist }
       it { is_expected.to be_a_migration }
