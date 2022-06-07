@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- Add some additional tests for existing code [\#12](https://github.com/r6e/two_factor_authentication/pull/12)
 - Fix naming and namespacing issues [\#11](https://github.com/r6e/two_factor_authentication/pull/11)
 - Add support for Rails engines [\#10](https://github.com/r6e/two_factor_authentication/pull/10)
 - Change migration name to more verb-y form [\#9](https://github.com/r6e/two_factor_authentication/pull/9)
