@@ -9,16 +9,12 @@ rails = case rails_version
         when "master"
           {github: "rails/rails"}
         when "default"
-          "~> 5.2"
+          "~> 6.1.6"
         else
           "~> #{rails_version}"
         end
 
 gem "rails", rails
-
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.2.0')
-  gem "test-unit", "~> 3.0"
-end
 
 group :test, :development do
   gem 'sqlite3'
@@ -27,4 +23,5 @@ end
 group :test do
   gem 'rack_session_access'
   gem 'ammeter'
+  gem "test-unit", "~> 3.0"
 end
