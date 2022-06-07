@@ -40,7 +40,7 @@ module Devise
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
-            without_spaces(code), 
+            without_spaces(code),
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
@@ -101,7 +101,7 @@ module Devise
         def create_direct_otp(options = {})
           # Create a new random OTP and store it in the database
           digits = options[:length] || self.class.direct_otp_length || 6
-          update_attributes(
+          update(
             direct_otp: random_base10(digits),
             direct_otp_sent_at: Time.now.utc
           )
@@ -122,7 +122,7 @@ module Devise
         end
 
         def clear_direct_otp
-          update_attributes(direct_otp: nil, direct_otp_sent_at: nil)
+          update(direct_otp: nil, direct_otp_sent_at: nil)
         end
       end
 
@@ -189,7 +189,7 @@ module Devise
           salt = encrypted_otp_secret_key_salt ||
                  self.encrypted_otp_secret_key_salt = generate_random_base64_encoded_salt
 
-          decode_salt_if_encoded(salt)
+          decode_otp_salt_if_encoded(salt)
         end
 
         def generate_random_base64_encoded_salt
@@ -197,7 +197,7 @@ module Devise
           prefix + [SecureRandom.random_bytes].pack('m')
         end
 
-        def decode_salt_if_encoded(salt)
+        def decode_otp_salt_if_encoded(salt)
           salt.slice(0).eql?('_') ? salt.slice(1..-1).unpack('m').first : salt
         end
       end
