@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- Fix code whitespace issues [\#3](https://github.com/r6e/two_factor_authentication/pull/3)
 - Fix url encoding issue in test regex [\#2](https://github.com/r6e/two_factor_authentication/pull/2)
 - Add manifest.js to test rails app [\#1](https://github.com/r6e/two_factor_authentication/pull/1)
 - Fix class detection in reset\_otp\_state\_for\(user\) [\#69](https://github.com/Houdini/two_factor_authentication/pull/69) ([monfresh](https://github.com/monfresh))
