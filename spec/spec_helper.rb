@@ -13,6 +13,7 @@ RSpec.configure do |config|
   config.use_transactional_examples = true
 
   config.include Capybara::DSL
+  config.include Devise::Test::IntegrationHelpers, type: :request
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
