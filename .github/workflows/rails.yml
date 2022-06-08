@@ -1,0 +1,33 @@
+name: Rails
+
+on:
+  workflow_call:
+    inputs:
+      rails-version:
+        required: true
+        type: string
+
+jobs:
+  build-2-7:
+    uses: ./.github/workflows.ruby.yml
+    with:
+      ruby-version: 2.7.6
+      rails-version: ${{ inputs.rails-version }}
+
+  build-3-0:
+    uses: ./.github/workflows.ruby.yml
+    with:
+      ruby-version: 3.0.4
+      rails-version: ${{ inputs.rails-version }}
+
+  build-3-1:
+    uses: ./.github/workflows.ruby.yml
+    with:
+      ruby-version: 3.1.2
+      rails-version: ${{ inputs.rails-version }}
+
+  build-3-2:
+    uses: ./.github/workflows.ruby.yml
+    with:
+      ruby-version: 3.2.0-preview1
+      rails-version: ${{ inputs.rails-version }}

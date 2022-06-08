@@ -1,0 +1,32 @@
+name: Ruby
+
+on:
+  workflow_call:
+    inputs:
+      ruby-version:
+        required: true
+        type: string
+      rails-version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }}
+    strategy:
+      matrix:
+        ruby:
+          - ${{ inputs.ruby-version }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Ruby ${{ inputs.ruby-version }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - name: Run the default task
+      run: bundle exec rake
+      env:
+        RAILS_VERSION: ${{ inputs.rails-version }}
+        RUBY_VERSION: ${{ inputs.ruby-version }}

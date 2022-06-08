@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'generators/active_record/two_factor_authentication_generator'
 
 describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :generator do
-  destination File.expand_path('../../../../../tmp', __FILE__)
+  destination File.expand_path('../../../../tmp', __FILE__)
 
   before do
     prepare_destination

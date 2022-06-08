@@ -13,6 +13,7 @@ pkg/*
 *.swp
 *~
 bin/*
+tmp/
 nbproject
 patches-*
 capybara-*.html
