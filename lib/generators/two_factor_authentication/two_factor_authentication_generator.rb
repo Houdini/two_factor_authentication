@@ -7,7 +7,7 @@ module TwoFactorAuthenticatable
 
       def inject_two_factor_authentication_content
         path = File.join("app", "models", "#{file_path}.rb")
-        inject_into_file(path, "two_factor_authenticatable, :", :after => "devise :") if File.exists?(path)
+        inject_into_file(path, "two_factor_authenticatable, :", :after => "devise :") if File.exist?(path)
       end
 
       hook_for :orm
