@@ -27,6 +27,9 @@ module Devise
   mattr_accessor :otp_secret_encryption_key
   @@otp_secret_encryption_key = ''
 
+  mattr_accessor :skip_send_new_otp_in_after_set_user_for
+  @@skip_send_new_otp_in_after_set_user_for = []
+
   mattr_accessor :second_factor_resource_id
   @@second_factor_resource_id = 'id'
 

@@ -76,6 +76,22 @@ feature "User of two factor authentication" do
       expect(page).to have_content("Param B is param b")
     end
 
+    scenario "is redirected to TFA when path requires authentication and works with resent code" do
+      visit dashboard_path + "?A=param%20a&B=param%20b"
+
+      expect(page).to_not have_content("Your Personal Dashboard")
+      SMSProvider.messages.clear()
+
+      click_on "Resend Code"
+      fill_in "code", with: SMSProvider.last_message.body
+      click_button "Submit"
+
+      expect(page).to have_content("Your Personal Dashboard")
+      expect(page).to have_content("You are signed in as Marissa")
+      expect(page).to have_content("Param A is param a")
+      expect(page).to have_content("Param B is param b")
+    end
+
     scenario "is locked out after max failed attempts" do
       visit user_two_factor_authentication_path
 
@@ -136,6 +152,21 @@ feature "User of two factor authentication" do
         expect(page).to have_content("Enter the code that was sent to you")
       end
 
+      scenario 'Sends OTP code by SMS' do
+        login_as user
+        SMSProvider.messages.clear()
+        visit dashboard_path
+        expect(SMSProvider.messages).not_to be_empty
+      end
+
+      scenario "Doesn't sends OTP code by SMS upon every request if so configured" do
+        login_as user
+        SMSProvider.messages.clear()
+        allow(Rails.application.config.devise).to receive(:skip_send_new_otp_in_after_set_user_for).and_return([:user])
+        visit dashboard_path
+        expect(SMSProvider.messages).to be_empty
+      end
+
       scenario 'TFA should be different for different users' do
         sms_sign_in
 
@@ -160,8 +191,31 @@ feature "User of two factor authentication" do
         click_button 'Submit'
       end
 
+      def sms_sign_in_with_resent_code
+        visit user_two_factor_authentication_path
+        SMSProvider.messages.clear()
+        click_on 'Resend Code'
+        fill_in 'code', with: SMSProvider.last_message.body
+        click_button 'Submit'
+      end
+
       scenario 'TFA should be unique for specific user' do
         sms_sign_in
+
+        tfa_cookie1 = get_tfa_cookie()
+
+        logout
+        reset_session!
+
+        user2 = create_user()
+        set_tfa_cookie(tfa_cookie1)
+        login_as(user2)
+        visit dashboard_path
+        expect(page).to have_content("Enter the code that was sent to you")
+      end
+
+      scenario 'TFA should be unique for specific user with resent code' do
+        sms_sign_in_with_resent_code
 
         tfa_cookie1 = get_tfa_cookie()
 
