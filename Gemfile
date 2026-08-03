@@ -32,6 +32,7 @@ elsif ruby_version < Gem::Version.new('2.6.0')
 end
 
 gem 'loofah', '< 2.21' if ruby_version < Gem::Version.new('2.5.0')
+gem 'psych', '< 5' if rails_version == '7.1' && ruby_version < Gem::Version.new('3.0.0')
 
 group :test, :development do
   gem 'ostruct' if ruby_version >= Gem::Version.new('4.0.0')
