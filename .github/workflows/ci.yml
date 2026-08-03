@@ -20,12 +20,16 @@ jobs:
         include:
           - ruby: "2.2"
             rails: "4.2"
+            bundler: "1.17.3"
           - ruby: "2.3"
             rails: "4.2"
+            bundler: "1.17.3"
           - ruby: "2.4"
             rails: "4.2"
+            bundler: "1.17.3"
           - ruby: "2.5"
             rails: "4.2"
+            bundler: "1.17.3"
           - ruby: "2.3"
             rails: "5.2"
           - ruby: "2.4"
@@ -76,6 +80,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler: ${{ matrix.bundler || 'default' }}
           bundler-cache: true
 
       - name: Set up test database
