@@ -1,3 +1,4 @@
+require 'logger'
 require File.expand_path('../boot', __FILE__)
 
 require "active_record/railtie"
@@ -60,4 +61,3 @@ module Dummy
     config.secret_key_base = 'secretvalue'
   end
 end
-
