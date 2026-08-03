@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Ruby ${{ matrix.ruby }} / Rails ${{ matrix.rails }}
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.rails == 'main' }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: "2.2"
+            rails: "4.2"
+          - ruby: "2.3"
+            rails: "4.2"
+          - ruby: "2.4"
+            rails: "4.2"
+          - ruby: "2.5"
+            rails: "4.2"
+          - ruby: "2.3"
+            rails: "5.2"
+          - ruby: "2.4"
+            rails: "5.2"
+          - ruby: "2.5"
+            rails: "5.2"
+          - ruby: "2.5"
+            rails: "6.0"
+          - ruby: "2.7"
+            rails: "6.0"
+          - ruby: "2.5"
+            rails: "6.1"
+          - ruby: "3.1"
+            rails: "6.1"
+          - ruby: "2.7"
+            rails: "7.0"
+          - ruby: "3.2"
+            rails: "7.0"
+          - ruby: "2.7"
+            rails: "7.1"
+          - ruby: "3.3"
+            rails: "7.1"
+          - ruby: "3.1"
+            rails: "7.2"
+          - ruby: "4.0"
+            rails: "7.2"
+          - ruby: "3.2"
+            rails: "8.0"
+          - ruby: "4.0"
+            rails: "8.0"
+          - ruby: "3.2"
+            rails: "8.1"
+          - ruby: "4.0"
+            rails: "8.1"
+          - ruby: "4.0"
+            rails: main
+
+    env:
+      RAILS_VERSION: ${{ matrix.rails }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Set up test database
+        run: bundle exec rake app:db:setup
+
+      - name: Run specs
+        run: bundle exec rake spec
