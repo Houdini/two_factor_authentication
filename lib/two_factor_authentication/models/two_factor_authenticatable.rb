@@ -35,8 +35,8 @@ module Devise
 
         def authenticate_totp(code, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
-          digits = options[:otp_length] || self.class.otp_length
-          drift = options[:drift] || self.class.allowed_otp_drift_seconds
+          digits = options[:otp_length] || (self.respond_to?(:otp_length) && self.otp_length) || self.class.otp_length
+          drift = options[:drift] || (self.respond_to?(:allowed_otp_drift_seconds) && self.allowed_otp_drift_seconds) || self.class.allowed_otp_drift_seconds
           raise "authenticate_totp called with no otp_secret_key set" if totp_secret.nil?
           totp = ROTP::TOTP.new(totp_secret, digits: digits)
           new_timestamp = totp.verify(
@@ -44,13 +44,15 @@ module Devise
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
-          self.totp_timestamp = new_timestamp
+          # ROTP returns the matched timestamp as a Unix epoch Integer;
+          # coerce it so the datetime column casts it correctly
+          self.totp_timestamp = Time.zone.at(new_timestamp)
           true
         end
 
         def provisioning_uri(account = nil, options = {})
           totp_secret = options[:otp_secret_key] || otp_secret_key
-          options[:digits] ||= options[:otp_length] || self.class.otp_length
+          options[:digits] ||= options[:otp_length] || (self.respond_to?(:otp_length) && self.otp_length) || self.class.otp_length
           raise "provisioning_uri called with no otp_secret_key set" if totp_secret.nil?
           account ||= email if respond_to?(:email)
           ROTP::TOTP.new(totp_secret, options).provisioning_uri(account)
@@ -74,11 +76,15 @@ module Devise
         end
 
         def max_login_attempts?
-          second_factor_attempts_count.to_i >= max_login_attempts.to_i
+          second_factor_attempts_count.to_i > max_login_attempts.to_i
         end
 
         def max_login_attempts
-          self.class.max_login_attempts
+          self.max_login_attempts
+        end
+
+        def attempts_left
+          max_login_attempts.to_i - second_factor_attempts_count.to_i
         end
 
         def totp_enabled?
@@ -100,8 +106,8 @@ module Devise
 
         def create_direct_otp(options = {})
           # Create a new random OTP and store it in the database
-          digits = options[:length] || self.class.direct_otp_length || 6
-          update_attributes(
+          digits = options[:length] || (self.respond_to?(:direct_otp_length) && self.direct_otp_length) || self.class.direct_otp_length || 6
+          update(
             direct_otp: random_base10(digits),
             direct_otp_sent_at: Time.now.utc
           )
@@ -118,11 +124,11 @@ module Devise
         end
 
         def direct_otp_expired?
-          Time.now.utc > direct_otp_sent_at + self.class.direct_otp_valid_for
+          Time.now.utc > direct_otp_sent_at + self.direct_otp_valid_for
         end
 
         def clear_direct_otp
-          update_attributes(direct_otp: nil, direct_otp_sent_at: nil)
+          update(direct_otp: nil, direct_otp_sent_at: nil)
         end
       end
 
@@ -166,11 +172,19 @@ module Devise
         def encryption_options_for(value)
           {
             value: value,
-            key: Devise.otp_secret_encryption_key,
+            key: otp_secret_encryption_key,
             iv: iv_for_attribute,
             salt: salt_for_attribute,
             algorithm: 'aes-256-cbc'
           }
+        end
+
+        def otp_secret_encryption_key
+          if self.respond_to?(:otp_secret_encryption_key)
+            self.otp_secret_encryption_key
+          else
+            Devise.otp_secret_encryption_key
+          end
         end
 
         def iv_for_attribute(algorithm = 'aes-256-cbc')

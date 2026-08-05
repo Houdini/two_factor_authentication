@@ -24,14 +24,23 @@ module Devise
   mattr_accessor :remember_otp_session_for_seconds
   @@remember_otp_session_for_seconds = 0
 
-  mattr_accessor :otp_secret_encryption_key
-  @@otp_secret_encryption_key = ''
-
   mattr_accessor :second_factor_resource_id
   @@second_factor_resource_id = 'id'
 
   mattr_accessor :delete_cookie_on_logout
   @@delete_cookie_on_logout = false
+
+  mattr_writer :otp_secret_encryption_key
+  @@otp_secret_encryption_key = ''
+
+  def self.otp_secret_encryption_key
+    if @@otp_secret_encryption_key.respond_to?(:call)
+      @@otp_secret_encryption_key.call
+    else
+      @@otp_secret_encryption_key
+    end
+  end
+  delegate :otp_secret_encryption_key, to: 'self.class'
 end
 
 module TwoFactorAuthentication

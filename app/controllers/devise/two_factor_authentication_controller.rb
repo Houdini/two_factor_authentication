@@ -24,8 +24,8 @@ class Devise::TwoFactorAuthenticationController < DeviseController
 
   private
 
-  def after_two_factor_success_for(resource)
-    set_remember_two_factor_cookie(resource)
+  def after_two_factor_success_for(resource, options = {})
+    set_remember_two_factor_cookie(resource, options)
 
     warden.session(resource_name)[TwoFactorAuthentication::NEED_AUTHENTICATION] = false
     # For compatability with devise versions below v4.2.0
@@ -41,13 +41,20 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     redirect_to after_two_factor_success_path_for(resource)
   end
 
-  def set_remember_two_factor_cookie(resource)
-    expires_seconds = resource.class.remember_otp_session_for_seconds
+  def set_remember_two_factor_cookie(resource, options = {})
+    expires_seconds = if resource.respond_to?(:remember_otp_session_for_seconds)
+      resource.remember_otp_session_for_seconds
+    else
+      resource.class.remember_otp_session_for_seconds
+    end
 
     if expires_seconds && expires_seconds > 0
       cookies.signed[TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME] = {
           value: "#{resource.class}-#{resource.public_send(Devise.second_factor_resource_id)}",
-          expires: expires_seconds.seconds.from_now
+          expires: expires_seconds.seconds.from_now,
+          httponly: options[:httponly] || nil,
+          secure: options[:secure] || nil,
+          same_site: options[:same_site] || nil
       }
     end
   end
