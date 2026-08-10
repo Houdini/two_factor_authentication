@@ -44,7 +44,7 @@ module Devise
             drift_ahead: drift, drift_behind: drift, after: totp_timestamp
           )
           return false unless new_timestamp
-          self.totp_timestamp = new_timestamp
+          self.totp_timestamp = Time.at(new_timestamp).utc
           true
         end
 
