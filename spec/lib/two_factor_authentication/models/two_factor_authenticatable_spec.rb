@@ -322,4 +322,39 @@ describe Devise::Models::TwoFactorAuthenticatable do
       end
     end
   end
+
+  context 'with an ActiveRecord model' do
+    let(:user) { create_user }
+
+    describe '#authenticate_totp' do
+      shared_examples 'persisted totp' do
+        let(:secret) { record.generate_totp_secret }
+
+        before do
+          record.otp_secret_key = secret
+          record.save!
+        end
+
+        it 'stores the last used time step as a time' do
+          expect(record.authenticate_totp(ROTP::TOTP.new(secret).now)).to eq(true)
+          record.save!
+
+          expect(record.reload.totp_timestamp).to be_a(Time)
+        end
+
+        it 'rejects a reused code after the record is reloaded' do
+          code = ROTP::TOTP.new(secret).now
+          expect(record.authenticate_totp(code)).to eq(true)
+          record.save!
+
+          expect(record.class.find(record.id).authenticate_totp(code)).to eq(false)
+        end
+      end
+
+      context 'with a plain secret' do
+        let(:record) { user }
+        include_examples 'persisted totp'
+      end
+    end
+  end
 end
