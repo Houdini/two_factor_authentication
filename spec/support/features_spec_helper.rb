@@ -30,6 +30,7 @@ end
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers, type: :feature
+  config.include Warden::Test::Helpers, type: :request
   config.include FeaturesSpecHelper, type: :feature
 
   config.before(:each) do
