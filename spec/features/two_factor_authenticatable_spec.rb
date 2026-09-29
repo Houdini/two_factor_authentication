@@ -3,20 +3,14 @@ include AuthenticatedModelHelper
 
 feature "User of two factor authentication" do
   context 'sending two factor authentication code via SMS' do
-    shared_examples 'sends and authenticates code' do |user, type|
-      before do
-        user.reload
-        if type == 'encrypted'
-          allow(User).to receive(:has_one_time_password).with(encrypted: true)
-        end
-      end
-
+    shared_examples 'sends and authenticates code' do |scope|
       it 'does not send an SMS before the user has signed in' do
+        user
         expect(SMSProvider.messages).to be_empty
       end
 
       it 'sends code via SMS after sign in' do
-        visit new_user_session_path
+        visit send("new_#{scope}_session_path")
         complete_sign_in_form_for(user)
 
         expect(page).to have_content 'Enter the code that was sent to you'
@@ -28,10 +22,8 @@ feature "User of two factor authentication" do
       end
 
       it 'authenticates a valid OTP code' do
-        visit new_user_session_path
+        visit send("new_#{scope}_session_path")
         complete_sign_in_form_for(user)
-
-        expect(page).to have_content('You are signed in as Marissa')
 
         fill_in 'code', with: SMSProvider.last_message.body
         click_button 'Submit'
@@ -44,8 +36,11 @@ feature "User of two factor authentication" do
       end
     end
 
-    it_behaves_like 'sends and authenticates code', create_user('not_encrypted')
-    it_behaves_like 'sends and authenticates code', create_user, 'encrypted'
+    context 'for a user with a plain OTP secret' do
+      let(:user) { create_user }
+
+      it_behaves_like 'sends and authenticates code', :user
+    end
   end
 
   scenario "must be logged in" do

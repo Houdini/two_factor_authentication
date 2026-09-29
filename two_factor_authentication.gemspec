@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
     * your own sms logic
   EOF
 
-  s.rubyforge_project = "two_factor_authentication"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
@@ -30,10 +28,10 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rotp', '>= 4.0.0'
   s.add_runtime_dependency 'encryptor'
 
-  s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec-rails', '>= 3.0.1'
-  s.add_development_dependency 'capybara', '~> 2.5'
+  s.add_development_dependency 'capybara', '~> 3.0'
   s.add_development_dependency 'pry'
+  s.add_development_dependency 'byebug'
   s.add_development_dependency 'timecop'
 end

@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'generators/active_record/two_factor_authentication_generator'
 
 describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :generator do
-  destination File.expand_path('../../../../../tmp', __FILE__)
+  destination File.expand_path('../../../tmp/generators', __dir__)
 
   before do
     prepare_destination
@@ -21,7 +21,7 @@ describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :gene
     end
 
     describe 'the migration' do
-      subject { migration_file('db/migrate/two_factor_authentication_add_to_users.rb') }
+      subject { Pathname.new(migration_file('db/migrate/two_factor_authentication_add_to_users.rb')) }
 
       it { is_expected.to exist }
       it { is_expected.to be_a_migration }
@@ -41,7 +41,7 @@ describe ActiveRecord::Generators::TwoFactorAuthenticationGenerator, type: :gene
   end
 
   describe 'on PostgreSQL' do
-    subject { migration_file('db/migrate/two_factor_authentication_add_to_users.rb') }
+    subject { Pathname.new(migration_file('db/migrate/two_factor_authentication_add_to_users.rb')) }
 
     before do
       gen = generator %w(users)

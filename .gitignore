@@ -21,3 +21,6 @@ dump.rdb
 .rbenv-version
 .ruby-gemset
 .ruby-version
+
+# Generator spec output
+/tmp

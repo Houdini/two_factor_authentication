@@ -1,27 +1,24 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in devise_ip_filter.gemspec
+# Specify your gem's dependencies in two_factor_authentication.gemspec
 gemspec
 
 rails_version = ENV["RAILS_VERSION"] || "default"
 
 rails = case rails_version
-        when "master"
-          {github: "rails/rails"}
+        when "main"
+          {github: "rails/rails", branch: "main"}
         when "default"
-          "~> 5.2"
+          "~> 8.1.0"
         else
-          "~> #{rails_version}"
+          "~> #{rails_version}.0"
         end
 
 gem "rails", rails
 
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.2.0')
-  gem "test-unit", "~> 3.0"
-end
-
 group :test, :development do
-  gem 'sqlite3'
+  gem 'sqlite3', '>= 2.1'
+  gem 'sprockets-rails'
 end
 
 group :test do
