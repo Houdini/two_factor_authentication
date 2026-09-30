@@ -61,11 +61,12 @@ class Devise::TwoFactorAuthenticationController < DeviseController
     resource.save
     set_flash_message :alert, :attempt_failed, now: true
 
+    # 422 lets Turbo (the Rails 7+ default) render the response to a form submission
     if resource.max_login_attempts?
       sign_out(resource)
-      render :max_login_attempts_reached
+      render :max_login_attempts_reached, status: 422
     else
-      render :show
+      render :show, status: 422
     end
   end
 

@@ -161,7 +161,7 @@ Below is an example using ERB:
   <%= submit_tag "Log in!" %>
 <% end %>
 
-<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+<%= button_to "Sign out", destroy_user_session_path, :method => :delete %>
 ```
 
 #### Upgrading from version 1.X to 2.X

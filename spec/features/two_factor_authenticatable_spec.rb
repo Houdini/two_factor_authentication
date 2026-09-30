@@ -89,6 +89,14 @@ feature "User of two factor authentication" do
       expect(page).to have_content("You are signed out")
     end
 
+    scenario "can sign out from the two factor page" do
+      visit user_two_factor_authentication_path
+
+      click_button "Sign out"
+
+      expect(page).to have_content("You are signed out")
+    end
+
     scenario "cannot retry authentication after max attempts" do
       user.update_attribute(:second_factor_attempts_count, User.max_login_attempts)
 
