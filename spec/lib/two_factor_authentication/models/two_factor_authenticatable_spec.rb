@@ -326,6 +326,38 @@ describe Devise::Models::TwoFactorAuthenticatable do
   context 'with an ActiveRecord model' do
     let(:user) { create_user }
 
+    describe '#create_direct_otp' do
+      it 'persists the code and the time it was sent' do
+        Timecop.freeze do
+          user.create_direct_otp
+          user.reload
+
+          expect(user.direct_otp).to match(/\A\d{6}\z/)
+          expect(user.direct_otp_sent_at).to be_within(1.second).of(Time.now)
+        end
+      end
+    end
+
+    describe '#authenticate_direct_otp' do
+      it 'clears the persisted code after a successful match' do
+        user.create_direct_otp
+        code = user.reload.direct_otp
+
+        expect(user.authenticate_direct_otp(code)).to eq(true)
+        user.reload
+        expect(user.direct_otp).to be_nil
+        expect(user.direct_otp_sent_at).to be_nil
+      end
+    end
+
+    describe '#send_new_otp' do
+      it 'delivers the persisted code' do
+        user.send_new_otp
+
+        expect(SMSProvider.last_message.body).to eq(user.reload.direct_otp)
+      end
+    end
+
     describe '#authenticate_totp' do
       shared_examples 'persisted totp' do
         let(:secret) { record.generate_totp_secret }
