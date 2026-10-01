@@ -171,9 +171,9 @@ Below is an example using ERB:
 <%= button_to "Sign out", destroy_user_session_path, :method => :delete %>
 ```
 
-#### Upgrading from version 2.2.0
+#### Upgrading from version 2.2.0 to 3.0.0
 
-See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220).
+See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220-to-300).
 
 #### Upgrading from version 1.X to 2.X
 

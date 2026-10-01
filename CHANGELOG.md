@@ -1,9 +1,9 @@
 # Change Log
 
-## [Unreleased](https://github.com/Houdini/two_factor_authentication/tree/HEAD)
-[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v2.2.0...HEAD)
+## [v3.0.0](https://github.com/Houdini/two_factor_authentication/tree/v3.0.0) (2026-10-01)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v2.2.0...v3.0.0)
 
-See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220) for upgrade steps.
+See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220-to-300) for upgrade steps.
 
 **Breaking changes:**
 

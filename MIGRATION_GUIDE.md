@@ -1,8 +1,8 @@
 # Migration Guide
 
-## Upgrading from 2.2.0
+## Upgrading from 2.2.0 to 3.0.0
 
-This release brings the gem up to date with current Ruby, Rails and Devise, and
+Version 3.0.0 brings the gem up to date with current Ruby, Rails and Devise, and
 fixes several bugs that made 2.2.0 unusable on Rails 6.1+, Ruby 3.2+ and
 PostgreSQL. Most apps only need to bump the gem version, but a few behaviours
 changed. Go through the checklist below.
