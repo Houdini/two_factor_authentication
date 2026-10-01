@@ -69,12 +69,19 @@ rails g migration AddTwoFactorFieldsToUsers second_factor_attempts_count:integer
 
 Open your migration file (it will be in the `db/migrate` directory and will be
 named something like `20151230163930_add_two_factor_fields_to_users.rb`), and
-add `unique: true` to the `add_index` line so that it looks like this:
+set the attempt counter's default to `0` and add `unique: true` to the
+`add_index` line so that they look like this:
 
 ```ruby
+add_column :users, :second_factor_attempts_count, :integer, default: 0
 add_index :users, :encrypted_otp_secret_key, unique: true
 ```
 Save the file.
+
+The counter must contain an integer because failed OTP submissions increment
+it. If you already ran a migration without this default, add a follow-up
+migration that sets the default to `0` and backfills existing `NULL` counters
+to `0`, preserving other counter values.
 
 #### Complete the setup
 
@@ -238,8 +245,9 @@ steps:
        User.reset_column_information
 
        User.find_each do |user|
-         user.otp_secret_key = ROTP::Base32.random_base32
-         user.save!
+         # Read through the encrypted accessor, then write the plaintext column
+         # directly without invoking the encrypted setter.
+         user.update_columns(otp_secret_key: user.otp_secret_key)
        end
      end
    end
@@ -255,13 +263,22 @@ steps:
 If, for some reason, you want to switch back to the old non-encrypted version,
 use these steps:
 
-1. Remove `(encrypted: true)` from `has_one_time_password`
+1. Stop application writes while rolling back and changing the model
+   configuration. Keep `has_one_time_password(encrypted: true)` and the same
+   `otp_secret_encryption_key` configured throughout the rollback.
 
 2. Roll back the last 3 migrations (assuming you haven't added any new ones
-after them):
+   after them):
    ```
    bundle exec rake db:rollback STEP=3
    ```
+
+   This recreates the plaintext column, copies each decrypted secret back into
+   it, and then removes the encryption columns. Existing authenticator secrets
+   are preserved, and users without TOTP retain a `nil` secret.
+
+3. Remove `(encrypted: true)` from `has_one_time_password` and restart the
+   application before allowing writes again.
 
 #### Critical Security Note! Add before_action to your user registration controllers
 
@@ -283,65 +300,103 @@ to overwrite/customize user registrations. It should include the lines below, fo
    end
    ```
 
+   Route registrations through this controller in `config/routes.rb`:
+
+   ```ruby
+   devise_for :users, controllers: { registrations: 'registrations' }
+   ```
+
+   Update your existing `devise_for :users` declaration. Defining the controller
+   alone does not change Devise's routes, so the callback will not run until
+   this mapping is configured.
+
    `is_fully_authenticated?` checks the scope of the current Devise controller,
    or `Devise.default_scope` elsewhere. Pass a scope to check another model,
    e.g. `is_fully_authenticated?(:admin)`.
 
 #### Critical Security Note! Add 2FA validation to your custom user actions
 
-Make sure you are passing the 2FA secret codes securely and checking for them upon critical user actions, such as API key updates, user email or pgp pubkey updates, or any other changess to private/secure account-related details. Validate the secret during the initial 2FA key/secret verification by the user also, of course.
+Require fresh second-factor verification for sensitive account changes,
+including replacing or disabling TOTP. Verify a code against the existing
+secret before assigning a replacement; a code for the replacement secret only
+proves that the user configured the new authenticator.
 
- For example, a simple account_controller.rb may look something like this:
+For initial TOTP enrollment, verify a fresh direct OTP instead. The following
+example generates a pending secret on the server, keeps it separate from the
+active secret, and requires separate `current_code` and `new_code` values:
 
-   ```
-   require 'json'
+```ruby
+class AccountController < ApplicationController
+  before_action :authenticate_user!
 
-   class AccountController < ApplicationController
-     before_action :require_signed_in!
-     before_action :authenticate_user!
-     respond_to :html, :json
-     
-     def account_API
-       resp = {}
-       begin       
-         if(account_params["twoFAKey"] && account_params["twoFASecret"])
-           current_user.otp_secret_key = account_params["twoFAKey"]
-           if(current_user.authenticate_totp(account_params["twoFASecret"]))
-             # user has validated their temporary 2FA code, save it to their account, enable 2FA on this account
-             current_user.save!
-             resp['success'] = "passed 2FA validation!"
-           else
-             resp['error'] = "failed 2FA validation!"
-           end
-         elsif(param[:userAccountStuff] && param[:userAccountWidget])
-           #before updating important user account stuff and widgets,
-           #check to see that the 2FA secret has also been passed in, and verify it...
-           if(account_params["twoFASecret"] && current_user.totp_enabled? && current_user.authenticate_totp(account_params["twoFASecret"]))
-             # user has passed 2FA checks, do cool user account stuff here
-             ...
-           else 
-             # user failed 2FA check! No cool user stuff happens!             
-              resp[error] = 'You failed 2FA validation!'
-           end
-           
-             ...
-           end
-         else
-           resp['error'] = 'unknown format error, not saved!'  
-         end
-       rescue Exception => e
-         puts "WARNING: account api threw error : '#{e}' for user #{current_user.username}"
-         #print "error trace: #{e.backtrace}\n"
-         resp['error'] = "unanticipated server response"
-       end
-       render json: resp.to_json
-     end
-   
-     def account_params
-       params.require(:twoFA).permit(:userAccountStuff, :userAcountWidget, :twoFAKey, :twoFASecret)
-     end
-   end   
-   ```
+  def new_totp
+    secret = current_user.generate_totp_secret
+    session[:pending_totp] = { 'user_id' => current_user.id, 'secret' => secret }
+    current_user.send_new_otp unless current_user.totp_enabled?
+    render json: { provisioning_uri: current_user.provisioning_uri(nil, otp_secret_key: secret) }
+  end
+
+  def update_totp
+    codes = params.require(:two_factor).permit(:current_code, :new_code)
+    pending = session[:pending_totp]
+    unless pending && pending['user_id'] == current_user.id
+      render json: { error: 'Start TOTP setup first.' }, status: :unprocessable_entity
+      return
+    end
+
+    updated = false
+    current_user.with_lock do
+      next if current_user.max_login_attempts?
+
+      valid_current_code = if current_user.totp_enabled?
+                             current_user.authenticate_totp(codes[:current_code].to_s)
+                           else
+                             current_user.authenticate_direct_otp(codes[:current_code].to_s)
+                           end
+      unless valid_current_code
+        current_user.increment!(:second_factor_attempts_count)
+        next
+      end
+
+      # Persist consumption of the current code even if the new code is invalid.
+      current_user.save!
+
+      # The new secret has its own replay timestamp, independent of the old one.
+      candidate = current_user.class.new
+      next unless candidate.confirm_totp_secret(pending['secret'], codes[:new_code].to_s)
+
+      current_user.update!(
+        otp_secret_key: candidate.otp_secret_key,
+        totp_timestamp: candidate.totp_timestamp,
+        direct_otp: nil,
+        direct_otp_sent_at: nil,
+        second_factor_attempts_count: 0
+      )
+      updated = true
+    end
+
+    if updated
+      session.delete(:pending_totp)
+      render json: { success: 'TOTP configuration saved.' }
+    else
+      render json: { error: 'Second-factor verification failed.' }, status: :unauthorized
+    end
+  end
+end
+```
+
+Connect these actions in `config/routes.rb`:
+
+```ruby
+post 'account/totp/setup', to: 'account#new_totp'
+patch 'account/totp', to: 'account#update_totp'
+```
+
+Show the provisioning URI as a QR code and ask for both codes before submitting
+the update. Users without TOTP receive a fresh direct code through your
+`send_two_factor_authentication_code` implementation. Apply the same existing
+factor check to other sensitive changes, and save the user after a successful
+TOTP check to persist its replay timestamp.
 
 
 ### Example App
@@ -357,20 +412,12 @@ config.otp_secret_encryption_key = ENV['OTP_SECRET_ENCRYPTION_KEY']
 
 to set up TOTP for Google Authenticator for user:
 
-   ```
-   current_user.otp_secret_key =  current_user.generate_totp_secret
-   current_user.save!
-   ```
-   
-( encrypted db fields are set upon user model save action,
-rails c access relies on setting env var: OTP_SECRET_ENCRYPTION_KEY )
+Use the `new_totp` and `update_totp` actions above to prepare the QR code and
+verify both the current factor and the new authenticator code. Keep the pending
+secret separate from `current_user.otp_secret_key` until both checks succeed.
 
-to check if user has input the correct code (from the QR display page)
-before saving the user model:
-
-   ```
-   current_user.authenticate_totp('123456')
-   ```
+Encrypted database fields are persisted when the update action saves the user.
+Rails console access also requires `OTP_SECRET_ENCRYPTION_KEY` to be set.
 
 additional note:
  
@@ -385,24 +432,22 @@ otpauth://totp/LABEL?secret=p6wwetjnkjnrcmpd    (example secret used here)
 
 where LABEL should be something like "example.com (Username)", which shows up in their GA app to remind them the code is for example.com
 
-this returns true or false with an allowed_otp_drift_seconds 'grace period'
-
 to set TOTP to DISABLED for a user account:
 
-   ```
-   current_user.second_factor_attempts_count=nil
-   current_user.encrypted_otp_secret_key=nil
-   current_user.encrypted_otp_secret_key_iv=nil
-   current_user.encrypted_otp_secret_key_salt=nil
-   current_user.direct_otp=nil
-   current_user.direct_otp_sent_at=nil
-   current_user.totp_timestamp=nil
-   current_user.direct_otp=nil
-   current_user.otp_secret_key=nil
-   current_user.save! (if in ruby code instead of console)
-   current_user.direct_otp? => false
-   current_user.totp_enabled? => false
-   ```
-   
+After verifying the existing factor as described above:
 
+```ruby
+current_user.update!(
+  otp_secret_key: nil,
+  totp_timestamp: nil,
+  direct_otp: nil,
+  direct_otp_sent_at: nil,
+  second_factor_attempts_count: 0
+)
+current_user.direct_otp? # => false
+current_user.totp_enabled? # => false
+```
 
+This disables TOTP and leaves the attempt counter at an integer value. Direct
+OTP authentication remains required unless `need_two_factor_authentication?`
+returns `false`.
