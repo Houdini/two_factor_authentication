@@ -6,6 +6,7 @@ Dummy::Application.routes.draw do
   get "/secret", to: "home#secret", as: :secret
 
   devise_for :users
+  devise_for :secure_users
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

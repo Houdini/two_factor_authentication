@@ -41,6 +41,12 @@ feature "User of two factor authentication" do
 
       it_behaves_like 'sends and authenticates code', :user
     end
+
+    context 'for a second devise scope with an encrypted OTP secret' do
+      let(:user) { create_secure_user }
+
+      it_behaves_like 'sends and authenticates code', :secure_user
+    end
   end
 
   scenario "must be logged in" do

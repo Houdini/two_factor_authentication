@@ -387,6 +387,17 @@ describe Devise::Models::TwoFactorAuthenticatable do
         let(:record) { user }
         include_examples 'persisted totp'
       end
+
+      context 'with an encrypted secret' do
+        let(:record) { create_secure_user }
+        include_examples 'persisted totp'
+
+        it 'keeps the secret encrypted in the database' do
+          expect(record.reload.encrypted_otp_secret_key).to be_present
+          expect(record.encrypted_otp_secret_key).not_to include(secret)
+          expect(record.otp_secret_key).to eq(secret)
+        end
+      end
     end
   end
 end
