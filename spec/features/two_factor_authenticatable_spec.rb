@@ -64,6 +64,61 @@ feature "User of two factor authentication" do
     end
   end
 
+  context 'authenticating with an authenticator app (TOTP)' do
+    shared_examples 'authenticates a TOTP code' do |scope|
+      let(:secret) { user.generate_totp_secret }
+
+      before do
+        user.update!(otp_secret_key: secret)
+        visit send("new_#{scope}_session_path")
+        complete_sign_in_form_for(user)
+      end
+
+      it 'asks for the authenticator code without sending an SMS' do
+        expect(page).to have_content('Enter the code from your authenticator app')
+        expect(SMSProvider.messages).to be_empty
+      end
+
+      it 'accepts a valid TOTP code' do
+        fill_in 'code', with: ROTP::TOTP.new(secret).now
+        click_button 'Submit'
+
+        expect(page).to have_content('Two factor authentication successful.')
+        expect(current_path).to eq root_path
+      end
+
+      it 'rejects an invalid TOTP code' do
+        fill_in 'code', with: 'incorrect'
+        click_button 'Submit'
+
+        expect(page).to have_content('Attempt failed')
+        expect(page).to have_content('Enter the code from your authenticator app')
+      end
+
+      it 'sends a code by SMS on request instead' do
+        click_link 'Send me a code instead'
+
+        expect(SMSProvider.messages.size).to eq(1)
+        fill_in 'code', with: SMSProvider.last_message.body
+        click_button 'Submit'
+
+        expect(page).to have_content('Two factor authentication successful.')
+      end
+    end
+
+    context 'for a user with a plain OTP secret' do
+      let(:user) { create_user }
+
+      it_behaves_like 'authenticates a TOTP code', :user
+    end
+
+    context 'for a second devise scope with an encrypted OTP secret' do
+      let(:user) { create_secure_user }
+
+      it_behaves_like 'authenticates a TOTP code', :secure_user
+    end
+  end
+
   scenario "must be logged in" do
     visit user_two_factor_authentication_path
 
