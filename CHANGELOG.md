@@ -7,7 +7,7 @@ See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220-to-300) for upgr
 
 **Breaking changes:**
 
-- Require Rails 5.0 or newer (was 3.1.1). Tested on Ruby 3.2–4.0 with Rails 7.2, 8.0 and 8.1
+- Require Rails 5.0 or newer (was 3.1.1). Tested on Ruby 2.3–4.0 with Rails 5.2 through 8.1
 - `is_fully_authenticated?` checks the current Devise scope (or `Devise.default_scope`) instead of always `:user`, and accepts a scope: `is_fully_authenticated?(:admin)`. Before, it returned `true` for other models before the second factor had been entered
 - A rejected code or reaching the attempt limit now responds with 422 instead of 200, so Turbo renders the error
 - JSON requests that still need the second factor get a 401 with a `{"redirect_to": ...}` body instead of an empty 401 [\#143](https://github.com/Houdini/two_factor_authentication/pull/143) ([Kevinrob](https://github.com/Kevinrob))

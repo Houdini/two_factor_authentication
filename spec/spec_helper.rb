@@ -1,5 +1,6 @@
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../rails_app/config/environment.rb",  __FILE__)
+require File.expand_path("../rails_app/lib/sms_provider.rb", __FILE__)
 
 require 'rspec/rails'
 require 'timecop'

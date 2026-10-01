@@ -137,8 +137,13 @@ describe Devise::Models::TwoFactorAuthenticatable do
         end
 
         it "returns uri with user's email" do
-          expect(instance.provisioning_uri).
-            to match(%r{otpauth://totp/houdini%40example.com\?secret=\w{32}}) # %40 = @
+          uri = URI.parse(instance.provisioning_uri)
+          params = URI.decode_www_form(uri.query).to_h
+
+          expect(uri.scheme).to eq('otpauth')
+          expect(uri.host).to eq('totp')
+          expect(URI.decode_www_form_component(uri.path)).to eq('/houdini@example.com')
+          expect(params['secret']).to match(/\w{32}/)
         end
 
         it 'returns uri with issuer option' do
@@ -152,7 +157,7 @@ describe Devise::Models::TwoFactorAuthenticatable do
 
           expect(uri.scheme).to eq('otpauth')
           expect(uri.host).to eq('totp')
-          expect(uri.path).to eq('/Magic:houdini')
+          expect(URI.decode_www_form_component(uri.path)).to eq('/Magic:houdini')
           expect(params['issuer']).to eq('Magic')
           expect(params['secret']).to match(/\w{32}/)
         end

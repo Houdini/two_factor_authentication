@@ -11,9 +11,9 @@ changed. Go through the checklist below.
 
 - **Rails 5.0 or newer is now required** (it was `>= 3.1.1`). If you are on
   Rails 3.x or 4.x, stay on 2.2.0.
-- The gem is tested on Ruby 3.2, 3.3, 3.4 and 4.0 with Rails 7.2, 8.0 and 8.1
-  and Devise 5. Older Rails 5.x/6.x/7.x versions are allowed by the gemspec
-  but are no longer tested.
+- The gem is tested on Ruby 2.3 – 4.0 with Rails 5.2, 6.0, 6.1, 7.0, 7.1,
+  7.2, 8.0 and 8.1. Rails 5.0 and 5.1 are allowed by the gemspec but are not
+  tested.
 
 ### 2. Fix old unversioned migrations
 

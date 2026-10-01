@@ -11,7 +11,8 @@ rails = case rails_version
         when "default"
           "~> 8.1.0"
         else
-          "~> #{rails_version}.0"
+          requirement = rails_version.split('.').length == 2 ? "#{rails_version}.0" : rails_version
+          "~> #{requirement}"
         end
 
 gem "rails", rails
@@ -20,8 +21,27 @@ gem "rails", rails
 # mutates it in feature specs. Drop once a release includes rspec/rspec-rails#2907.
 gem "rspec-rails", github: "rspec/rspec-rails", branch: "main" if rails_version == "main"
 
+ruby_version = Gem::Version.new(RUBY_VERSION)
+
+gem "test-unit", "~> 3.0"
+
+if ruby_version < Gem::Version.new('2.5.0')
+  gem 'nokogiri', '~> 1.10.10'
+elsif ruby_version < Gem::Version.new('2.6.0')
+  gem 'nokogiri', '~> 1.12.5'
+end
+
+gem 'loofah', '< 2.21' if ruby_version < Gem::Version.new('2.5.0')
+gem 'psych', '< 5' if rails_version == '7.1' && ruby_version < Gem::Version.new('3.0.0')
+
 group :test, :development do
-  gem 'sqlite3', '>= 2.1'
+  gem 'ostruct' if ruby_version >= Gem::Version.new('4.0.0')
+  case rails_version
+  when '5.2', '6.0', '6.1', '7.0'
+    gem 'sqlite3', '~> 1.4'
+  else
+    gem 'sqlite3'
+  end
   gem 'sprockets-rails'
 end
 

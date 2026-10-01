@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["dmitrii.golub@gmail.com"]
   s.homepage    = "https://github.com/Houdini/two_factor_authentication"
   s.summary     = %q{Two factor authentication plugin for devise}
+  s.license     = "MIT"
   s.description = <<-EOF
     ### Features ###
     * control sms code pattern
@@ -30,7 +31,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec-rails', '>= 3.0.1'
-  s.add_development_dependency 'capybara', '~> 3.0'
+  s.add_development_dependency 'capybara', '>= 2.5', '< 4'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'byebug'
   s.add_development_dependency 'timecop'

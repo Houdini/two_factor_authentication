@@ -28,7 +28,7 @@ Once that's done, run:
 
     bundle install
 
-The gem is tested on Ruby 3.2 – 4.0 with Rails 7.2, 8.0 and 8.1 and Devise 5.
+The gem is tested on Ruby 2.3 – 4.0 with Rails 5.2 through 8.1.
 
 ### Installation
 
