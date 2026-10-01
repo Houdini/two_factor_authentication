@@ -1,31 +1,31 @@
 module TwoFactorAuthentication
   module Schema
     def second_factor_attempts_count
-      apply_devise_schema :second_factor_attempts_count, Integer, :default => 0
+      integer :second_factor_attempts_count, :default => 0
     end
 
     def encrypted_otp_secret_key
-      apply_devise_schema :encrypted_otp_secret_key, String
+      string :encrypted_otp_secret_key
     end
 
     def encrypted_otp_secret_key_iv
-      apply_devise_schema :encrypted_otp_secret_key_iv, String
+      string :encrypted_otp_secret_key_iv
     end
 
     def encrypted_otp_secret_key_salt
-      apply_devise_schema :encrypted_otp_secret_key_salt, String
+      string :encrypted_otp_secret_key_salt
     end
 
     def direct_otp
-      apply_devise_schema :direct_otp, String
+      string :direct_otp
     end
 
     def direct_otp_sent_at
-      apply_devise_schema :direct_otp_sent_at, DateTime
+      datetime :direct_otp_sent_at
     end
 
     def totp_timestamp
-      apply_devise_schema :totp_timestamp, Timestamp
+      timestamp :totp_timestamp
     end
   end
 end
