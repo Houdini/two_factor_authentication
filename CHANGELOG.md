@@ -1,8 +1,43 @@
 # Change Log
 
 ## [Unreleased](https://github.com/Houdini/two_factor_authentication/tree/HEAD)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v2.2.0...HEAD)
 
-[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...HEAD)
+See the [Migration Guide](MIGRATION_GUIDE.md#upgrading-from-220) for upgrade steps.
+
+**Breaking changes:**
+
+- Require Rails 5.0 or newer (was 3.1.1). Tested on Ruby 3.2–4.0 with Rails 7.2, 8.0 and 8.1
+- `is_fully_authenticated?` checks the current Devise scope (or `Devise.default_scope`) instead of always `:user`, and accepts a scope: `is_fully_authenticated?(:admin)`. Before, it returned `true` for other models before the second factor had been entered
+- A rejected code or reaching the attempt limit now responds with 422 instead of 200, so Turbo renders the error
+- JSON requests that still need the second factor get a 401 with a `{"redirect_to": ...}` body instead of an empty 401 [\#143](https://github.com/Houdini/two_factor_authentication/pull/143) ([Kevinrob](https://github.com/Kevinrob))
+
+**Fixed bugs:**
+
+- Replace `update_attributes` (removed in Rails 6.1) with `update`, which broke `create_direct_otp`, `send_new_otp` and `clear_direct_otp`
+- Store `totp_timestamp` as a `Time`; PostgreSQL rejected the Integer, so every TOTP login failed
+- The generator writes a versioned migration (`ActiveRecord::Migration[x.y]`), which Rails 5.1+ requires
+- The generator no longer uses `File.exists?` (removed in Ruby 3.2) and finds the model relative to the destination root
+- Remove `resend_code` from the route's `only:`, which Rails 8.1 rejects
+- The schema table helpers (`t.second_factor_attempts_count`, `t.totp_timestamp`, ...) no longer call the removed `apply_devise_schema`
+- Remove `totp_timestamp` from the Devise model config; `User.totp_timestamp` raised `NoMethodError`
+- "Sign out" on the two factor page uses `button_to` with `Devise.sign_out_via`, so it works without rails-ujs
+- Support ROTP 5.0, which renamed `ROTP::Base32.random_base32` to `random` [\#171](https://github.com/Houdini/two_factor_authentication/pull/171) ([jaspervandenberg](https://github.com/jaspervandenberg))
+
+**Implemented enhancements:**
+
+- Add the encrypted OTP secret index concurrently on PostgreSQL [\#197](https://github.com/Houdini/two_factor_authentication/pull/197) ([Lackoftactics](https://github.com/Lackoftactics))
+- Autofocus the code field [\#174](https://github.com/Houdini/two_factor_authentication/pull/174) ([gustavokitman](https://github.com/gustavokitman))
+- Add German translations [\#166](https://github.com/Houdini/two_factor_authentication/pull/166) ([JanBussieck](https://github.com/JanBussieck))
+
+**Other changes:**
+
+- Replace Travis CI with GitHub Actions
+- Test TOTP sign-in, resending the code, the attempt counter reset and an encrypted-secret model end to end
+- README updates [\#168](https://github.com/Houdini/two_factor_authentication/pull/168) ([MarkFChavez](https://github.com/MarkFChavez)), [\#139](https://github.com/Houdini/two_factor_authentication/pull/139) ([rmm5t](https://github.com/rmm5t))
+
+## [v2.0](https://github.com/Houdini/two_factor_authentication/tree/v2.0) (2017-05-12)
+[Full Changelog](https://github.com/Houdini/two_factor_authentication/compare/v1.1.5...v2.0)
 
 **Merged pull requests:**
 
