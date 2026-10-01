@@ -283,6 +283,10 @@ to overwrite/customize user registrations. It should include the lines below, fo
    end
    ```
 
+   `is_fully_authenticated?` checks the scope of the current Devise controller,
+   or `Devise.default_scope` elsewhere. Pass a scope to check another model,
+   e.g. `is_fully_authenticated?(:admin)`.
+
 #### Critical Security Note! Add 2FA validation to your custom user actions
 
 Make sure you are passing the 2FA secret codes securely and checking for them upon critical user actions, such as API key updates, user email or pgp pubkey updates, or any other changess to private/secure account-related details. Validate the secret during the initial 2FA key/secret verification by the user also, of course.

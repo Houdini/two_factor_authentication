@@ -66,4 +66,29 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       expect(response.body).to include('Access completely denied')
     end
   end
+
+  context 'with a second devise scope' do
+    let(:secure_user) { create_secure_user }
+
+    before do
+      @request.env['devise.mapping'] = Devise.mappings[:secure_user]
+      sign_in secure_user, scope: :secure_user
+    end
+
+    it 'reports the scope of the current resource as not fully authenticated' do
+      get :show
+
+      expect(response).to have_http_status(200)
+      expect(subject.is_fully_authenticated?).to eq false
+      expect(subject.is_fully_authenticated?(:secure_user)).to eq false
+    end
+
+    it 'reports the scope as fully authenticated after a valid code' do
+      secure_user.send_new_otp
+      post_code secure_user.reload.direct_otp
+
+      expect(subject.is_fully_authenticated?).to eq true
+      expect(subject.is_fully_authenticated?(:secure_user)).to eq true
+    end
+  end
 end

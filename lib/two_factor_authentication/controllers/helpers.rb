@@ -44,8 +44,9 @@ end
 module Devise
   module Controllers
     module Helpers
-      def is_fully_authenticated?
-        !session["warden.user.user.session"].try(:[], TwoFactorAuthentication::NEED_AUTHENTICATION)
+      def is_fully_authenticated?(scope = nil)
+        scope ||= devise_controller? ? resource_name : Devise.default_scope
+        !session["warden.user.#{scope}.session"].try(:[], TwoFactorAuthentication::NEED_AUTHENTICATION)
       end
     end
   end
