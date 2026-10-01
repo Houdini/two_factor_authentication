@@ -1,5 +1,5 @@
 # A second 2FA scope whose TOTP secret is encrypted.
-class DeviseCreateSecureUsers < ActiveRecord::Migration[7.2]
+class DeviseCreateSecureUsers < ActiveRecord::Migration[5.0]
   def change
     create_table(:secure_users) do |t|
       t.string :email,              null: false, default: ""

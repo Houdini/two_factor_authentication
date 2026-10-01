@@ -1,4 +1,4 @@
-class AddOtpColumnsToUsers < ActiveRecord::Migration[7.2]
+class AddOtpColumnsToUsers < ActiveRecord::Migration[5.0]
   def change
     add_column :users, :otp_secret_key, :string
     add_column :users, :direct_otp, :string
