@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Houdini/two_factor_authentication?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/Houdini/two_factor_authentication.svg?branch=master)](https://travis-ci.org/Houdini/two_factor_authentication)
+[![CI](https://github.com/Houdini/two_factor_authentication/actions/workflows/ci.yml/badge.svg)](https://github.com/Houdini/two_factor_authentication/actions/workflows/ci.yml)
 [![Code Climate](https://codeclimate.com/github/Houdini/two_factor_authentication.svg)](https://codeclimate.com/github/Houdini/two_factor_authentication)
 
 ## Features
@@ -28,7 +28,7 @@ Once that's done, run:
 
     bundle install
 
-Note that Ruby 2.1 or greater is required.
+The gem is tested on Ruby 3.2 – 4.0 with Rails 7.2, 8.0 and 8.1 and Devise 5.
 
 ### Installation
 
@@ -224,7 +224,7 @@ steps:
 
    Open the generated file, and replace its contents with the following:
    ```ruby
-   class PopulateEncryptedOtpFields < ActiveRecord::Migration
+   class PopulateEncryptedOtpFields < ActiveRecord::Migration[8.1]
      def up
        User.reset_column_information
 
