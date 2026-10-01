@@ -16,6 +16,10 @@ rails = case rails_version
 
 gem "rails", rails
 
+# Rails main freezes controller default_url_options; rspec-rails 8.0.4 still
+# mutates it in feature specs. Drop once a release includes rspec/rspec-rails#2907.
+gem "rspec-rails", github: "rspec/rspec-rails", branch: "main" if rails_version == "main"
+
 group :test, :development do
   gem 'sqlite3', '>= 2.1'
   gem 'sprockets-rails'
