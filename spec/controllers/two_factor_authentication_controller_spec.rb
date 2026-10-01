@@ -65,6 +65,15 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
       expect(response).to have_http_status(422)
       expect(response.body).to include('Access completely denied')
     end
+
+    it 'resets the failed attempt counter after a valid code' do
+      user.update!(second_factor_attempts_count: 1)
+
+      post_code user.reload.direct_otp
+
+      expect(response).to redirect_to(root_path)
+      expect(user.reload.second_factor_attempts_count).to eq(0)
+    end
   end
 
   describe 'GET resend_code' do

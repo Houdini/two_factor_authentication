@@ -119,6 +119,18 @@ feature "User of two factor authentication" do
     end
   end
 
+  scenario 'user who does not need two factor authentication goes straight in' do
+    allow_any_instance_of(User).to receive(:need_two_factor_authentication?).and_return(false)
+    user = create_user
+
+    visit new_user_session_path
+    complete_sign_in_form_for(user)
+    visit dashboard_path
+
+    expect(page).to have_content('Your Personal Dashboard')
+    expect(SMSProvider.messages).to be_empty
+  end
+
   scenario "must be logged in" do
     visit user_two_factor_authentication_path
 
@@ -163,6 +175,20 @@ feature "User of two factor authentication" do
 
       expect(page).to have_content("Access completely denied")
       expect(page).to have_content("You are signed out")
+    end
+
+    scenario "failed attempts are reset after a successful code" do
+      visit user_two_factor_authentication_path
+
+      fill_in "code", with: "incorrect"
+      click_button "Submit"
+      expect(user.reload.second_factor_attempts_count).to eq(1)
+
+      fill_in "code", with: SMSProvider.last_message.body
+      click_button "Submit"
+
+      expect(page).to have_content("Two factor authentication successful.")
+      expect(user.reload.second_factor_attempts_count).to eq(0)
     end
 
     scenario "can sign out from the two factor page" do
