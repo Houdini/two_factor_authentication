@@ -67,6 +67,21 @@ describe Devise::TwoFactorAuthenticationController, type: :controller do
     end
   end
 
+  describe 'GET resend_code' do
+    let(:user) { create_user }
+
+    before { sign_in user }
+
+    it 'sends a new code and redirects back to the form' do
+      get :resend_code
+
+      expect(SMSProvider.messages.size).to eq(1)
+      expect(SMSProvider.last_message.body).to eq(user.reload.direct_otp)
+      expect(response).to redirect_to(user_two_factor_authentication_path)
+      expect(flash[:notice]).to eq('Your authentication code has been sent.')
+    end
+  end
+
   context 'with a second devise scope' do
     let(:secure_user) { create_secure_user }
 

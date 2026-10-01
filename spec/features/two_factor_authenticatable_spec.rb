@@ -34,6 +34,21 @@ feature "User of two factor authentication" do
 
         expect(current_path).to eq root_path
       end
+
+      it 'sends a new code when the user asks to resend it' do
+        visit send("new_#{scope}_session_path")
+        complete_sign_in_form_for(user)
+
+        click_link 'Resend Code'
+
+        expect(page).to have_content('Your authentication code has been sent.')
+        expect(SMSProvider.messages.size).to eq(2)
+
+        fill_in 'code', with: SMSProvider.last_message.body
+        click_button 'Submit'
+
+        expect(page).to have_content('Two factor authentication successful.')
+      end
     end
 
     context 'for a user with a plain OTP secret' do
