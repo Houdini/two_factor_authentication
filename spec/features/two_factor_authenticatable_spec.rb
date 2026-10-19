@@ -218,6 +218,13 @@ feature "User of two factor authentication" do
         User.remember_otp_session_for_seconds = @original_remember_otp_session_for_seconds
       end
 
+      scenario "sets the remembered TFA cookie as HttpOnly" do
+        sms_sign_in
+
+        cookie = page.driver.browser.current_session.cookie_jar.get_cookie(TwoFactorAuthentication::REMEMBER_TFA_COOKIE_NAME)
+        expect(cookie).to be_http_only
+      end
+
       scenario "doesn't require TFA code again within 30 days" do
         sms_sign_in
 
